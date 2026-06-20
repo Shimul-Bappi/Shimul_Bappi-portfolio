@@ -1,0 +1,1090 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>Md. Shimul Ahmed Bappi — Research Portfolio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0a0f1e;
+  --dark:#0d1427;
+  --card:#ffffff08;
+  --cyan:#38bdf8;
+  --blue:#3b82f6;
+  --white:#ffffff;
+  --gray1:#f0f6ff;
+  --gray3:#d1d5db;
+  --gray4:#9ca3af;
+  --gray5:#6b7280;
+  --gray6:#4b5563;
+  --gray8:#1f2937;
+  --font:'Inter',system-ui,sans-serif;
+}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--navy);color:var(--white);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+a{color:inherit;text-decoration:none}
+img{display:block;max-width:100%}
+button{cursor:pointer;font-family:inherit;border:none;background:none;color:inherit}
+input,textarea{font-family:inherit}
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:#0a0f1e}
+::-webkit-scrollbar-thumb{background:rgba(56,189,248,0.3);border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:rgba(56,189,248,0.5)}
+::selection{background:rgba(56,189,248,0.3);color:#fff}
+
+/* ── NAV ── */
+nav{
+  position:fixed;top:0;left:0;right:0;z-index:100;
+  height:64px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 clamp(1rem,5vw,4rem);
+  transition:all .3s;
+}
+nav.scrolled{
+  background:rgba(10,15,30,.95);
+  backdrop-filter:blur(12px);
+  box-shadow:0 4px 24px rgba(0,0,0,.3);
+  border-bottom:1px solid rgba(255,255,255,.05);
+}
+.nav-logo{display:flex;align-items:center;gap:.6rem}
+.nav-logo-icon{
+  width:36px;height:36px;border-radius:10px;
+  background:linear-gradient(135deg,var(--cyan),var(--blue));
+  display:flex;align-items:center;justify-content:center;
+  font-weight:700;font-size:.8rem;color:var(--navy);
+  box-shadow:0 4px 12px rgba(56,189,248,.3);
+  transition:transform .2s;flex-shrink:0;
+}
+.nav-logo:hover .nav-logo-icon{transform:scale(1.05)}
+.nav-logo-text{font-weight:600;font-size:.9rem;display:none}
+@media(min-width:480px){.nav-logo-text{display:block}}
+.nav-links{display:none;align-items:center;gap:.25rem}
+@media(min-width:768px){.nav-links{display:flex}}
+.nav-links button{
+  padding:.5rem 1rem;border-radius:.5rem;font-size:.85rem;font-weight:500;
+  color:var(--gray3);transition:all .2s;
+}
+.nav-links button.active,.nav-links button:hover{color:var(--cyan);background:rgba(56,189,248,.1)}
+.nav-hire{
+  margin-left:.75rem;padding:.5rem 1rem;border-radius:.5rem;
+  font-size:.85rem;font-weight:600;
+  background:linear-gradient(135deg,var(--cyan),var(--blue));
+  color:var(--navy);transition:all .2s;
+  box-shadow:0 4px 12px rgba(56,189,248,.25);
+}
+.nav-hire:hover{opacity:.9}
+.hamburger{
+  display:flex;flex-direction:column;gap:5px;padding:.5rem;border-radius:.5rem;
+  transition:background .2s;
+}
+@media(min-width:768px){.hamburger{display:none}}
+.hamburger:hover{background:rgba(255,255,255,.05)}
+.hamburger span{display:block;width:20px;height:2px;background:var(--white);border-radius:2px;transition:all .3s}
+.hamburger.open span:nth-child(1){transform:rotate(45deg) translate(5px,5px)}
+.hamburger.open span:nth-child(2){opacity:0}
+.hamburger.open span:nth-child(3){transform:rotate(-45deg) translate(5px,-5px)}
+.mobile-menu{
+  display:none;position:fixed;top:64px;left:0;right:0;z-index:99;
+  background:rgba(13,20,39,.98);backdrop-filter:blur(12px);
+  border-bottom:1px solid rgba(255,255,255,.05);
+  padding:1rem 1.5rem 1.5rem;
+}
+.mobile-menu.open{display:block}
+.mobile-menu button,.mobile-menu a.mobile-hire{
+  display:block;width:100%;text-align:left;
+  padding:.75rem 1rem;border-radius:.5rem;font-size:.9rem;font-weight:500;
+  color:var(--gray3);transition:all .2s;
+}
+.mobile-menu button.active,.mobile-menu button:hover{color:var(--cyan);background:rgba(56,189,248,.1)}
+.mobile-menu a.mobile-hire{
+  text-align:center;margin-top:.5rem;
+  background:linear-gradient(135deg,var(--cyan),var(--blue));
+  color:var(--navy);font-weight:600;
+}
+
+/* ── HERO ── */
+.hero{
+  min-height:100vh;display:flex;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;padding:80px clamp(1rem,5vw,5rem) 40px;
+}
+.hero-bg{
+  position:absolute;inset:0;z-index:0;
+  background-image:
+    radial-gradient(circle at 1px 1px, rgba(56,189,248,.18) 1px, transparent 0),
+    linear-gradient(135deg, rgba(56,189,248,.05), rgba(59,130,246,.04));
+  background-size:34px 34px, 100% 100%;
+  animation:bgshift 30s linear infinite;
+}
+@keyframes bgshift{0%{background-position:0 0,0 0}100%{background-position:340px 340px,0 0}}
+.hero-bg::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(to bottom,rgba(10,15,30,.6),rgba(10,15,30,.4),var(--navy));
+}
+.hero-orb{position:absolute;inset:0;pointer-events:none;overflow:hidden;z-index:1}
+.orb1,.orb2,.orb3{position:absolute;border-radius:50%;filter:blur(80px)}
+.orb1{top:25%;left:25%;width:340px;height:340px;background:rgba(56,189,248,.1);animation:pulse 4s ease-in-out infinite}
+.orb2{bottom:25%;right:25%;width:340px;height:340px;background:rgba(59,130,246,.1);animation:pulse 4s ease-in-out 1.5s infinite}
+.orb3{top:50%;left:50%;transform:translate(-50%,-50%);width:520px;height:520px;background:rgba(79,70,229,.06);animation:pulse 4s ease-in-out 3s infinite}
+@keyframes pulse{0%,100%{opacity:.6}50%{opacity:1}}
+.hero-inner{
+  position:relative;z-index:2;max-width:1280px;width:100%;
+  display:flex;flex-direction:column;align-items:center;gap:3rem;
+}
+@media(min-width:1024px){.hero-inner{flex-direction:row;align-items:center;gap:4rem}}
+.hero-text{flex:1;text-align:center}
+@media(min-width:1024px){.hero-text{text-align:left}}
+.hero-badge{
+  display:inline-flex;align-items:center;gap:.5rem;
+  padding:.5rem 1rem;border-radius:100px;
+  background:rgba(56,189,248,.1);border:1px solid rgba(56,189,248,.2);
+  color:var(--cyan);font-size:.8rem;font-weight:500;margin-bottom:1.5rem;
+}
+.hero-badge-dot{width:8px;height:8px;border-radius:50%;background:var(--cyan);animation:pulse 2s ease-in-out infinite}
+.hero-h1{font-size:clamp(2rem,5vw,3.5rem);font-weight:700;line-height:1.1;margin-bottom:1rem}
+.hero-h1 .name{background:linear-gradient(135deg,var(--cyan),var(--blue),#818cf8);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-typewriter{height:40px;display:flex;align-items:center;justify-content:center;margin-bottom:1.5rem}
+@media(min-width:1024px){.hero-typewriter{justify-content:flex-start}}
+.hero-typewriter span{font-size:clamp(1rem,2.5vw,1.4rem);color:var(--gray3);font-weight:300}
+.cursor{display:inline-block;width:2px;height:1.4em;background:var(--cyan);margin-left:2px;animation:blink 1s step-end infinite;vertical-align:middle}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.hero-bio{color:var(--gray4);font-size:clamp(.9rem,2vw,1.05rem);max-width:540px;margin:0 auto 2rem;line-height:1.8}
+@media(min-width:1024px){.hero-bio{margin:0 0 2rem}}
+.hero-ctas{display:flex;flex-wrap:wrap;gap:.75rem;justify-content:center;margin-bottom:2rem}
+@media(min-width:1024px){.hero-ctas{justify-content:flex-start}}
+.btn-primary{
+  padding:.75rem 1.5rem;border-radius:.75rem;font-size:.9rem;font-weight:600;
+  background:linear-gradient(135deg,var(--cyan),var(--blue));color:var(--navy);
+  transition:all .2s;box-shadow:0 4px 16px rgba(56,189,248,.25);display:inline-block;
+}
+.btn-primary:hover{opacity:.9;transform:translateY(-2px);box-shadow:0 8px 24px rgba(56,189,248,.35)}
+.btn-ghost{
+  padding:.75rem 1.5rem;border-radius:.75rem;font-size:.9rem;font-weight:600;
+  border:1px solid rgba(255,255,255,.1);color:var(--white);transition:all .2s;display:inline-block;
+}
+.btn-ghost:hover{background:rgba(255,255,255,.05);border-color:rgba(255,255,255,.2);transform:translateY(-2px)}
+.btn-outline-cyan{
+  padding:.75rem 1.5rem;border-radius:.75rem;font-size:.9rem;font-weight:600;
+  border:1px solid rgba(56,189,248,.3);color:var(--cyan);transition:all .2s;display:inline-block;
+}
+.btn-outline-cyan:hover{background:rgba(56,189,248,.1);transform:translateY(-2px)}
+.hero-social-row{display:flex;align-items:center;gap:.75rem;justify-content:center}
+@media(min-width:1024px){.hero-social-row{justify-content:flex-start}}
+.hero-social-label{font-size:.8rem;color:var(--gray5)}
+.hero-social-icons{display:flex;gap:.5rem}
+.social-icon-btn{
+  width:36px;height:36px;border-radius:.5rem;border:1px solid rgba(255,255,255,.05);
+  display:flex;align-items:center;justify-content:center;color:var(--gray4);
+  transition:all .2s;
+}
+.social-icon-btn:hover{color:var(--cyan);background:rgba(56,189,248,.1);border-color:rgba(56,189,248,.2);transform:scale(1.1)}
+/* Profile card */
+.hero-profile{flex-shrink:0;display:flex;flex-direction:column;align-items:center;margin:0 1.5rem}
+@media(min-width:1024px){.hero-profile{margin:0 2.5rem}}
+.profile-wrap{position:relative}
+.profile-glow{
+  position:absolute;inset:-8px;border-radius:50%;
+  background:linear-gradient(135deg,var(--cyan),var(--blue));
+  opacity:.25;filter:blur(20px);
+}
+.profile-ring{
+  position:absolute;inset:-4px;border-radius:50%;
+  border:2px solid rgba(56,189,248,.3);
+  animation:spin 8s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.profile-img{
+  position:relative;width:clamp(180px,28vw,280px);height:clamp(180px,28vw,280px);
+  border-radius:50%;overflow:hidden;
+  border:4px solid rgba(255,255,255,.1);
+  box-shadow:0 20px 60px rgba(56,189,248,.2);
+}
+.profile-img img{width:100%;height:100%;object-fit:cover}
+/* Floating Cards */
+.float-card{
+  position:absolute;display:flex;align-items:center;gap:.6rem;
+  padding:.6rem .85rem;border-radius:.8rem;
+  background:rgba(13,20,39,.9);backdrop-filter:blur(10px);
+  border:1px solid rgba(255,255,255,.1);
+  box-shadow:0 12px 28px rgba(0,0,0,.35);
+  z-index:3;white-space:nowrap;animation:floaty 4s ease-in-out infinite;
+}
+.fc-icon{font-size:1.1rem;line-height:1}
+.fc-title{font-size:.78rem;font-weight:700;color:var(--white)}
+.fc-sub{font-size:.65rem;color:var(--gray5)}
+.fc1{top:-6%;left:-22%;animation-delay:0s}
+.fc2{top:14%;right:-26%;animation-delay:.7s}
+.fc3{bottom:10%;left:-26%;animation-delay:1.4s}
+.fc4{bottom:-6%;right:-20%;animation-delay:2.1s}
+@keyframes floaty{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+@media(max-width:480px){.float-card{display:none}}
+@media(min-width:481px) and (max-width:1023px){.fc1,.fc3{left:-12%}.fc2,.fc4{right:-12%}}
+.profile-stats{
+  margin-top:1.5rem;display:flex;align-items:center;gap:1rem;
+  padding:.75rem 1.25rem;border-radius:100px;
+  background:#0d1427;border:1px solid rgba(255,255,255,.08);
+  box-shadow:0 8px 24px rgba(0,0,0,.3);
+}
+.stat-item{text-align:center}
+.stat-num{color:var(--cyan);font-weight:700;font-size:.9rem}
+.stat-label{color:var(--gray5);font-size:.65rem}
+.stat-div{width:1px;height:24px;background:rgba(255,255,255,.1)}
+/* Scroll indicator */
+.scroll-indicator{
+  position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:.5rem;
+  animation:bounce 2s ease-in-out infinite;
+}
+@keyframes bounce{0%,100%{transform:translateX(-50%) translateY(0)}50%{transform:translateX(-50%) translateY(-8px)}}
+.scroll-indicator span{font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--gray5)}
+.scroll-mouse{width:20px;height:32px;border:1.5px solid rgba(255,255,255,.3);border-radius:10px;display:flex;align-items:flex-start;justify-content:center;padding-top:4px}
+.scroll-dot{width:4px;height:8px;border-radius:2px;background:var(--cyan);animation:scroll-move 1.5s ease-in-out infinite}
+@keyframes scroll-move{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(10px)}}
+
+/* ── SECTIONS ── */
+section{padding:clamp(4rem,8vw,6rem) clamp(1rem,5vw,5rem)}
+.section-inner{max-width:1280px;margin:0 auto}
+.section-header{text-align:center;margin-bottom:4rem}
+.section-eyebrow{font-size:.75rem;font-weight:600;letter-spacing:.18em;text-transform:uppercase;color:var(--cyan);display:block;margin-bottom:.5rem}
+.section-title{font-size:clamp(1.8rem,4vw,2.5rem);font-weight:700;color:var(--white)}
+.section-title .accent{color:var(--cyan)}
+.section-bar{width:64px;height:4px;background:linear-gradient(90deg,var(--cyan),var(--blue));border-radius:2px;margin:.75rem auto 0}
+.section-desc{margin-top:1.25rem;color:var(--gray4);max-width:520px;margin-left:auto;margin-right:auto;font-size:.95rem;line-height:1.75}
+.section-line-top{width:100%;height:1px;background:linear-gradient(90deg,transparent,rgba(56,189,248,.25),transparent)}
+
+/* ── ABOUT ── */
+#about{background:linear-gradient(to bottom,var(--navy),var(--dark))}
+.about-grid{display:grid;gap:2rem}
+@media(min-width:1024px){.about-grid{grid-template-columns:1fr 1fr;gap:3rem;align-items:start}}
+.glass-card{
+  background:rgba(255,255,255,.03);backdrop-filter:blur(4px);
+  border:1px solid rgba(255,255,255,.08);border-radius:1rem;
+  padding:1.5rem 2rem;
+}
+.card-heading{
+  font-size:1.1rem;font-weight:600;color:var(--white);margin-bottom:1.25rem;
+  display:flex;align-items:center;gap:.6rem;
+}
+.card-heading-icon{
+  width:32px;height:32px;border-radius:.5rem;
+  background:rgba(56,189,248,.15);display:flex;align-items:center;justify-content:center;font-size:1rem;
+}
+.about-text{color:var(--gray4);font-size:.93rem;line-height:1.85;margin-bottom:.85rem}
+.about-text .highlight{color:var(--cyan);font-weight:500}
+.edu-timeline{padding-left:1.25rem;border-left:2px solid rgba(56,189,248,.25);position:relative}
+.edu-dot{position:absolute;left:-9px;top:0;width:16px;height:16px;border-radius:50%;background:var(--cyan);border:4px solid var(--dark)}
+.edu-card{background:rgba(56,189,248,.06);border:1px solid rgba(56,189,248,.12);border-radius:.75rem;padding:1rem}
+.edu-degree{color:var(--white);font-weight:600;font-size:.9rem}
+.edu-school{color:var(--cyan);font-size:.85rem;font-weight:500;margin-top:.2rem}
+.edu-location{color:var(--gray5);font-size:.75rem;margin-top:.15rem}
+.edu-badge{display:inline-block;margin-top:.5rem;padding:.25rem .75rem;border-radius:100px;background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.2);color:#93c5fd;font-size:.72rem;font-weight:500}
+.interests-grid{display:grid;grid-template-columns:1fr 1fr;gap:.6rem}
+.interest-item{
+  display:flex;align-items:center;gap:.6rem;padding:.6rem .75rem;border-radius:.6rem;
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.06);
+  font-size:.82rem;color:var(--gray3);transition:all .2s;
+}
+.interest-item:hover{border-color:rgba(56,189,248,.2);background:rgba(56,189,248,.05);color:var(--white)}
+.highlights-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem}
+.highlight-item{
+  display:flex;gap:.6rem;padding:.75rem;border-radius:.75rem;
+  background:linear-gradient(135deg,rgba(255,255,255,.03),transparent);
+  border:1px solid rgba(255,255,255,.05);transition:all .2s;
+}
+.highlight-item:hover{border-color:rgba(56,189,248,.2)}
+.highlight-icon{font-size:1.4rem;flex-shrink:0}
+.highlight-title{color:var(--white);font-size:.82rem;font-weight:600}
+.highlight-desc{color:var(--gray5);font-size:.72rem;margin-top:.2rem;line-height:1.5}
+.location-card{
+  display:flex;align-items:center;gap:1rem;padding:1.1rem 1.25rem;border-radius:.75rem;
+  background:linear-gradient(135deg,rgba(56,189,248,.1),rgba(59,130,246,.1));
+  border:1px solid rgba(56,189,248,.15);
+}
+.location-card-icon{width:44px;height:44px;border-radius:.6rem;background:rgba(56,189,248,.15);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0}
+.location-name{color:var(--white);font-weight:600;font-size:.9rem}
+.location-addr{color:var(--gray4);font-size:.8rem}
+.location-dept{color:var(--cyan);font-size:.75rem;font-weight:500;margin-top:.2rem}
+
+/* ── RESEARCH ── */
+#research{background:linear-gradient(to bottom,var(--dark),var(--navy))}
+.research-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;max-width:380px;margin:0 auto 3.5rem}
+.rstat{text-align:center;padding:1rem;border-radius:1rem;background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08)}
+.rstat-icon{font-size:1.4rem;margin-bottom:.3rem}
+.rstat-num{color:var(--cyan);font-weight:700;font-size:1.4rem}
+.rstat-label{color:var(--gray5);font-size:.7rem}
+.research-grid{display:grid;gap:1.5rem}
+@media(min-width:640px){.research-grid{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1024px){.research-grid{grid-template-columns:repeat(3,1fr)}}
+.research-card{
+  position:relative;border-radius:1rem;overflow:hidden;padding:1.75rem;
+  display:flex;flex-direction:column;
+  transition:transform .3s,box-shadow .3s;
+  cursor:default;
+}
+.research-card:hover{transform:translateY(-4px) scale(1.01);box-shadow:0 20px 48px rgba(0,0,0,.35)}
+.rc1{background:linear-gradient(135deg,rgba(56,189,248,.18),rgba(59,130,246,.08));border:1px solid rgba(56,189,248,.2)}
+.rc2{background:linear-gradient(135deg,rgba(99,102,241,.18),rgba(139,92,246,.08));border:1px solid rgba(99,102,241,.2)}
+.rc3{background:linear-gradient(135deg,rgba(139,92,246,.18),rgba(236,72,153,.08));border:1px solid rgba(139,92,246,.2)}
+.rc-num{position:absolute;top:1rem;right:1.2rem;font-size:3rem;font-weight:900;color:rgba(255,255,255,.04);line-height:1;pointer-events:none}
+.rc-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.25rem}
+.rc-icon{width:52px;height:52px;border-radius:1rem;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:1.75rem}
+.rc-status{display:inline-flex;align-items:center;gap:.4rem;padding:.25rem .7rem;border-radius:100px;border:1px solid rgba(74,222,128,.2);background:rgba(74,222,128,.1);color:#4ade80;font-size:.7rem;font-weight:600}
+.rc-status-dot{width:6px;height:6px;border-radius:50%;background:#4ade80}
+.rc-title{font-size:1rem;font-weight:700;color:var(--white);margin-bottom:.5rem;transition:color .2s;line-height:1.35}
+.research-card:hover .rc-title{color:var(--cyan)}
+.rc-desc{font-size:.83rem;color:var(--gray4);line-height:1.75;flex:1;margin-bottom:1.25rem}
+.rc-tags{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:1.25rem}
+.rc-tag{padding:.2rem .6rem;border-radius:.4rem;font-size:.7rem;font-weight:500;border:1px solid}
+.tag-cyan{background:rgba(56,189,248,.15);color:#67e8f9;border-color:rgba(56,189,248,.2)}
+.tag-indigo{background:rgba(99,102,241,.15);color:#a5b4fc;border-color:rgba(99,102,241,.2)}
+.tag-violet{background:rgba(139,92,246,.15);color:#c4b5fd;border-color:rgba(139,92,246,.2)}
+.rc-actions{display:flex;gap:.6rem}
+.rc-btn-read{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:.4rem;
+  padding:.6rem 1rem;border-radius:.6rem;font-size:.82rem;font-weight:500;
+  background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);color:var(--white);
+  transition:all .2s;
+}
+.rc-btn-read:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.2)}
+.rc-btn-dl{
+  width:38px;height:38px;border-radius:.6rem;display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);color:var(--gray4);
+  transition:all .2s;flex-shrink:0;
+}
+.rc-btn-dl:hover{background:rgba(56,189,248,.12);border-color:rgba(56,189,248,.25);color:var(--cyan)}
+.rc-bottom-line{position:absolute;bottom:0;left:0;right:0;height:2px;opacity:0;transition:opacity .3s;background:linear-gradient(90deg,var(--cyan),var(--blue))}
+.rc2 .rc-bottom-line{background:linear-gradient(90deg,#6366f1,#a855f7)}
+.rc3 .rc-bottom-line{background:linear-gradient(90deg,#8b5cf6,#ec4899)}
+.research-card:hover .rc-bottom-line{opacity:1}
+.rg-cta{
+  margin-top:3.5rem;display:flex;flex-direction:column;align-items:center;gap:1rem;
+  padding:1.5rem 2rem;border-radius:1rem;
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);
+  text-align:center;
+}
+@media(min-width:640px){.rg-cta{flex-direction:row;text-align:left}}
+.rg-cta-text h4{color:var(--white);font-weight:600;font-size:.95rem}
+.rg-cta-text p{color:var(--gray5);font-size:.82rem;margin-top:.2rem}
+.rg-cta-btn{
+  flex-shrink:0;padding:.65rem 1.25rem;border-radius:.6rem;font-size:.85rem;font-weight:600;
+  background:linear-gradient(135deg,rgba(0,204,187,.8),#00ccbb);color:var(--white);
+  white-space:nowrap;transition:opacity .2s;
+}
+.rg-cta-btn:hover{opacity:.85}
+
+/* ── SKILLS ── */
+#skills{background:linear-gradient(to bottom,var(--navy),var(--dark))}
+.skills-grid{display:grid;gap:1.5rem;margin-bottom:3rem}
+@media(min-width:640px){.skills-grid{grid-template-columns:repeat(2,1fr)}}
+.skill-cat-card{
+  border-radius:1rem;padding:1.5rem 1.75rem;
+  transition:transform .3s;
+}
+.skill-cat-card:hover{transform:scale(1.005)}
+.scc1{background:linear-gradient(135deg,rgba(56,189,248,.12),rgba(59,130,246,.04));border:1px solid rgba(56,189,248,.14)}
+.scc2{background:linear-gradient(135deg,rgba(99,102,241,.12),rgba(139,92,246,.04));border:1px solid rgba(99,102,241,.14)}
+.scc3{background:linear-gradient(135deg,rgba(139,92,246,.12),rgba(236,72,153,.04));border:1px solid rgba(139,92,246,.14)}
+.scc4{background:linear-gradient(135deg,rgba(16,185,129,.12),rgba(20,184,166,.04));border:1px solid rgba(16,185,129,.14)}
+.skill-cat-header{display:flex;align-items:center;gap:.75rem;margin-bottom:1.5rem}
+.skill-cat-icon{width:38px;height:38px;border-radius:.6rem;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:1.1rem}
+.skill-cat-name{color:var(--white);font-weight:600;font-size:.95rem}
+.skill-item{margin-bottom:1rem}
+.skill-item:last-child{margin-bottom:0}
+.skill-meta{display:flex;justify-content:space-between;align-items:center;margin-bottom:.35rem}
+.skill-name{color:var(--gray3);font-size:.85rem}
+.skill-pct{color:var(--gray5);font-size:.73rem;font-weight:600}
+.skill-track{height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden}
+.skill-fill{height:100%;border-radius:3px;position:relative}
+.skill-fill::after{content:'';position:absolute;inset:0;background:rgba(255,255,255,.2);border-radius:3px}
+.fill-cyan{background:var(--cyan)}
+.fill-indigo{background:#6366f1}
+.fill-violet{background:#8b5cf6}
+.fill-emerald{background:#10b981}
+.tools-section{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:1rem;padding:1.5rem 2rem;margin-bottom:2rem}
+.tools-title{color:var(--white);font-weight:600;font-size:1rem;text-align:center;margin-bottom:1.25rem}
+.tools-wrap{display:flex;flex-wrap:wrap;gap:.6rem;justify-content:center}
+.tool-chip{
+  display:flex;align-items:center;gap:.5rem;padding:.5rem 1rem;border-radius:.6rem;
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.07);
+  font-size:.83rem;color:var(--gray3);transition:all .2s;
+}
+.tool-chip:hover{border-color:rgba(56,189,248,.22);background:rgba(56,189,248,.05);color:var(--white)}
+.soft-skills{display:grid;grid-template-columns:repeat(2,1fr);gap:1rem}
+@media(min-width:640px){.soft-skills{grid-template-columns:repeat(4,1fr)}}
+.soft-item{
+  text-align:center;padding:1.25rem 1rem;border-radius:1rem;
+  background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);
+  transition:all .2s;
+}
+.soft-item:hover{border-color:rgba(56,189,248,.2)}
+.soft-emoji{font-size:2rem;margin-bottom:.5rem}
+.soft-pct{color:var(--cyan);font-weight:700;font-size:1.3rem;margin-bottom:.25rem}
+.soft-label{color:var(--gray4);font-size:.75rem}
+
+/* ── CONTACT ── */
+#contact{background:linear-gradient(to bottom,var(--dark),var(--navy));position:relative;overflow:hidden}
+#contact::before{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at center,rgba(56,189,248,.06),transparent 60%);pointer-events:none}
+.contact-grid{display:grid;gap:2.5rem}
+@media(min-width:1024px){.contact-grid{grid-template-columns:1fr 1fr;gap:3rem;align-items:start}}
+.contact-info-title{color:var(--white);font-weight:600;font-size:1.05rem;margin-bottom:1.5rem}
+.contact-items{display:flex;flex-direction:column;gap:.75rem;margin-bottom:1.5rem}
+.contact-item{
+  display:flex;align-items:center;gap:.9rem;padding:.9rem 1rem;border-radius:.75rem;
+  border:1px solid;transition:all .2s;
+}
+.contact-item:hover{transform:scale(1.01)}
+.ci-email{background:rgba(239,68,68,.06);border-color:rgba(239,68,68,.12)}
+.ci-loc{background:rgba(56,189,248,.06);border-color:rgba(56,189,248,.12)}
+.ci-gh{background:rgba(255,255,255,.04);border-color:rgba(255,255,255,.08)}
+.ci-li{background:rgba(10,102,194,.06);border-color:rgba(10,102,194,.12)}
+.ci-rg{background:rgba(0,204,187,.06);border-color:rgba(0,204,187,.12)}
+.ci-icon-wrap{flex-shrink:0}
+.ci-label{color:var(--gray5);font-size:.72rem;margin-bottom:.1rem}
+.ci-value{color:var(--white);font-size:.85rem;font-weight:500;word-break:break-all;transition:color .2s}
+.contact-item:hover .ci-value{color:var(--cyan)}
+.ci-arrow{margin-left:auto;color:var(--gray6);flex-shrink:0;transition:color .2s}
+.contact-item:hover .ci-arrow{color:var(--cyan)}
+.contact-social-box{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:.75rem;padding:1.1rem}
+.contact-social-label{color:var(--gray5);font-size:.8rem;margin-bottom:.75rem}
+.contact-social-icons{display:flex;flex-wrap:wrap;gap:.5rem}
+/* Contact form */
+.contact-form-card{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:1rem;padding:1.75rem}
+.form-title{color:var(--white);font-weight:600;font-size:1.05rem;margin-bottom:.35rem}
+.form-subtitle{color:var(--gray5);font-size:.83rem;line-height:1.6;margin-bottom:1.5rem}
+.form-row{display:grid;gap:1rem;margin-bottom:1rem}
+@media(min-width:480px){.form-row{grid-template-columns:1fr 1fr}}
+.form-group{margin-bottom:0}
+.form-label{display:block;color:var(--gray4);font-size:.75rem;font-weight:500;margin-bottom:.4rem}
+.form-input,.form-textarea{
+  width:100%;padding:.7rem 1rem;border-radius:.65rem;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+  color:var(--white);font-size:.85rem;outline:none;transition:all .2s;
+}
+.form-input::placeholder,.form-textarea::placeholder{color:var(--gray6)}
+.form-input:focus,.form-textarea:focus{border-color:rgba(56,189,248,.4);background:rgba(255,255,255,.07)}
+.form-textarea{resize:none;height:120px}
+.form-single{margin-bottom:1rem}
+.form-actions{display:flex;align-items:center;gap:.75rem;margin-top:1.25rem}
+.form-submit{
+  flex:1;display:flex;align-items:center;justify-content:center;gap:.5rem;
+  padding:.7rem 1.25rem;border-radius:.65rem;font-size:.88rem;font-weight:600;
+  background:linear-gradient(135deg,var(--cyan),var(--blue));color:var(--navy);
+  transition:all .2s;box-shadow:0 4px 16px rgba(56,189,248,.2);
+}
+.form-submit:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(56,189,248,.3)}
+.form-email-icon{
+  width:42px;height:42px;border-radius:.65rem;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);
+  color:var(--gray4);transition:all .2s;
+}
+.form-email-icon:hover{color:var(--cyan);border-color:rgba(56,189,248,.25);background:rgba(56,189,248,.08)}
+
+/* ── FOOTER ── */
+footer{background:#060b18;border-top:1px solid rgba(255,255,255,.05)}
+.footer-inner{max-width:1280px;margin:0 auto;padding:3.5rem clamp(1rem,5vw,5rem) 1.5rem}
+.footer-grid{display:grid;gap:2.5rem;margin-bottom:3rem}
+@media(min-width:640px){.footer-grid{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:1024px){.footer-grid{grid-template-columns:1.4fr 1fr 1fr}}
+.footer-brand-row{display:flex;align-items:center;gap:.75rem;margin-bottom:1rem}
+.footer-logo-icon{width:38px;height:38px;border-radius:.6rem;background:linear-gradient(135deg,var(--cyan),var(--blue));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.8rem;color:var(--navy)}
+.footer-brand-name{color:var(--white);font-weight:600;font-size:.9rem}
+.footer-brand-role{color:var(--gray5);font-size:.75rem}
+.footer-desc{color:var(--gray5);font-size:.83rem;line-height:1.75;margin-bottom:1.25rem}
+.footer-social-row{display:flex;gap:.4rem}
+.footer-social-btn{width:30px;height:30px;border-radius:.4rem;display:flex;align-items:center;justify-content:center;color:var(--gray5);border:1px solid rgba(255,255,255,.06);transition:all .2s}
+.footer-social-btn:hover{color:var(--cyan);background:rgba(56,189,248,.08);border-color:rgba(56,189,248,.18)}
+.footer-col-title{color:var(--white);font-weight:600;font-size:.8rem;letter-spacing:.1em;text-transform:uppercase;margin-bottom:1.25rem}
+.footer-links{list-style:none;display:flex;flex-direction:column;gap:.65rem}
+.footer-links li button,.footer-links li a{
+  display:flex;align-items:center;gap:.5rem;
+  color:var(--gray5);font-size:.83rem;transition:color .2s;background:none;border:none;cursor:pointer;font-family:inherit;
+}
+.footer-links li button:hover,.footer-links li a:hover{color:var(--cyan)}
+.footer-dot{width:4px;height:4px;border-radius:50%;background:rgba(56,189,248,.4);flex-shrink:0;transition:background .2s}
+.footer-links li button:hover .footer-dot,.footer-links li a:hover .footer-dot{background:var(--cyan)}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.05);padding:1.25rem clamp(1rem,5vw,5rem);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:.75rem;max-width:1280px;margin:0 auto}
+.footer-copy{color:var(--gray6);font-size:.75rem}
+.back-top{display:flex;align-items:center;gap:.5rem;color:var(--gray6);font-size:.75rem;transition:color .2s;background:none;border:none;cursor:pointer;font-family:inherit}
+.back-top:hover{color:var(--cyan)}
+.back-top-icon{width:24px;height:24px;border-radius:.4rem;border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;transition:border-color .2s}
+.back-top:hover .back-top-icon{border-color:rgba(56,189,248,.3)}
+
+/* Utility */
+.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)}
+svg{display:block}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="navbar">
+  <a href="#home" class="nav-logo" onclick="scrollToSection('home');return false">
+    <div class="nav-logo-icon">SB</div>
+    <span class="nav-logo-text">Shimul Bappi</span>
+  </a>
+  <div class="nav-links" id="navLinks">
+    <button onclick="scrollToSection('home')" data-section="home">Home</button>
+    <button onclick="scrollToSection('about')" data-section="about">About</button>
+    <button onclick="scrollToSection('research')" data-section="research">Research</button>
+    <button onclick="scrollToSection('skills')" data-section="skills">Skills</button>
+    <button onclick="scrollToSection('contact')" data-section="contact">Contact</button>
+    <a href="mailto:shimulbappi.sds49@gmail.com" class="nav-hire">Hire Me</a>
+  </div>
+  <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Toggle menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<div class="mobile-menu" id="mobileMenu">
+  <button onclick="scrollToSection('home')" data-section="home">Home</button>
+  <button onclick="scrollToSection('about')" data-section="about">About</button>
+  <button onclick="scrollToSection('research')" data-section="research">Research</button>
+  <button onclick="scrollToSection('skills')" data-section="skills">Skills</button>
+  <button onclick="scrollToSection('contact')" data-section="contact">Contact</button>
+  <a href="mailto:shimulbappi.sds49@gmail.com" class="mobile-hire">Hire Me</a>
+</div>
+
+<!-- HERO -->
+<section class="hero" id="home">
+  <div class="hero-bg"></div>
+  <div class="hero-orb"><div class="orb1"></div><div class="orb2"></div><div class="orb3"></div></div>
+  <div class="hero-inner">
+    <div class="hero-text">
+      <div class="hero-badge">
+        <span class="hero-badge-dot"></span>
+        Open to Research Collaborations
+      </div>
+      <h1 class="hero-h1">
+        Hi, I'm <span class="name">Shimul Bappi</span>
+      </h1>
+      <div class="hero-typewriter">
+        <span id="typewriterText"></span><span class="cursor"></span>
+      </div>
+      <p class="hero-bio">
+        Undergraduate researcher in <span style="color:var(--cyan);font-weight:500">Statistics & Data Science</span> at
+        Jahangirnagar University. Passionate about transforming data into actionable insights
+        through rigorous statistical methods and machine learning.
+      </p>
+      <div class="hero-ctas">
+        <button class="btn-primary" onclick="scrollToSection('research')">View Research</button>
+        <button class="btn-ghost" onclick="scrollToSection('contact')">Get In Touch</button>
+        <a href="https://github.com/Shimul-Bappi" target="_blank" rel="noopener" class="btn-outline-cyan">GitHub Profile</a>
+      </div>
+      <div class="hero-social-row">
+        <span class="hero-social-label">Find me on:</span>
+        <div class="hero-social-icons">
+          <a href="https://github.com/Shimul-Bappi" target="_blank" rel="noopener" class="social-icon-btn" title="GitHub">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+          </a>
+          <a href="https://www.linkedin.com/in/shimul-bappi/" target="_blank" rel="noopener" class="social-icon-btn" title="LinkedIn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+          </a>
+          <a href="https://www.researchgate.net/profile/Md-Bappi-2" target="_blank" rel="noopener" class="social-icon-btn" title="ResearchGate">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19.586 0c-.818 0-1.508.19-2.073.565-.563.377-.97.936-1.213 1.68a12.52 12.52 0 00-.31 2.813v.564h-3.12v1.89h3.12v11.97H18.9V7.512h2.652V5.621H18.9V4.19c0-.625.15-1.086.45-1.378.3-.29.768-.437 1.407-.437.317 0 .614.03.89.09l.354.08V.13l-.188-.04a5.755 5.755 0 00-1.227-.09zM7.79 5.335c-3.84 0-6.948 3.147-6.948 7.032S3.95 19.4 7.79 19.4c3.838 0 6.948-3.147 6.948-7.033 0-3.885-3.11-7.032-6.948-7.032zm0 2.043c2.741 0 4.96 2.24 4.96 5.01 0 2.769-2.219 5.01-4.96 5.01-2.742 0-4.96-2.24-4.96-5.01 0-2.77 2.218-5.01 4.96-5.01zm.035 1.96a3.05 3.05 0 00-3.05 3.05 3.05 3.05 0 003.05 3.05 3.05 3.05 0 003.05-3.05 3.05 3.05 0 00-3.05-3.05zm0 1.22a1.83 1.83 0 110 3.66 1.83 1.83 0 010-3.66z"/></svg>
+          </a>
+          <a href="https://x.com/Bappi_Shimul" target="_blank" rel="noopener" class="social-icon-btn" title="X / Twitter">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+          </a>
+          <a href="https://www.facebook.com/Shimul.Bappi49" target="_blank" rel="noopener" class="social-icon-btn" title="Facebook">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          </a>
+          <a href="https://www.instagram.com/shimul_bappi/" target="_blank" rel="noopener" class="social-icon-btn" title="Instagram">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+    <!-- Profile -->
+    <div class="hero-profile">
+      <div class="profile-wrap">
+        <div class="profile-glow"></div>
+        <div class="profile-ring"></div>
+        <div class="profile-img">
+          <img src="images/profile.png" alt="Md. Shimul Ahmed Bappi"/>
+        </div>
+        <!-- Floating Cards -->
+        <div class="float-card fc1">
+          <span class="fc-icon">📊</span>
+          <div><div class="fc-title">Data Science</div><div class="fc-sub">Statistics & DS</div></div>
+        </div>
+        <div class="float-card fc2">
+          <span class="fc-icon">🐍</span>
+          <div><div class="fc-title">Python · R</div><div class="fc-sub">Core Tools</div></div>
+        </div>
+        <div class="float-card fc3">
+          <span class="fc-icon">📝</span>
+          <div><div class="fc-title">3 Papers</div><div class="fc-sub">Personal Findings</div></div>
+        </div>
+        <div class="float-card fc4">
+          <span class="fc-icon">🤖</span>
+          <div><div class="fc-title">ML / NLP</div><div class="fc-sub">Specialization</div></div>
+        </div>
+      </div>
+      <div class="profile-stats">
+        <div class="stat-item"><div class="stat-num">3</div><div class="stat-label">Papers</div></div>
+        <div class="stat-div"></div>
+        <div class="stat-item"><div class="stat-num">JU</div><div class="stat-label">University</div></div>
+        <div class="stat-div"></div>
+        <div class="stat-item"><div class="stat-num">SDS</div><div class="stat-label">Dept.</div></div>
+      </div>
+    </div>
+  </div>
+  <div class="scroll-indicator" onclick="scrollToSection('about')" style="cursor:pointer">
+    <span>Scroll</span>
+    <div class="scroll-mouse"><div class="scroll-dot"></div></div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-inner">
+    <div class="section-line-top" style="margin-bottom:3.5rem"></div>
+    <div class="section-header">
+      <span class="section-eyebrow">Get to Know Me</span>
+      <h2 class="section-title">About <span class="accent">Me</span></h2>
+      <div class="section-bar"></div>
+    </div>
+    <div class="about-grid">
+      <!-- Left col -->
+      <div style="display:flex;flex-direction:column;gap:1.5rem">
+        <div class="glass-card">
+          <h3 class="card-heading"><span class="card-heading-icon">👤</span> Who I Am</h3>
+          <p class="about-text">I'm <strong style="color:var(--white)">Md. Shimul Ahmed Bappi</strong>, an undergraduate aspiring researcher in the Department of <span class="highlight">Statistics and Data Science</span> at Jahangirnagar University, Bangladesh.</p>
+
+          <li><a href="eResume.html" target="_blank" rel="noopener"><span class="footer-dot"></span>
+            <span class="highlight">eResume&#128279;</span></a></li>
+            <br>
+
+          <p class="about-text">My research interests span across statistical modeling, machine learning, data visualization, and applied statistics. I believe in the transformative power of data-driven insights to solve real-world challenges.</p>
+          <p class="about-text">I am passionate about bridging the gap between rigorous statistical theory and practical applications, especially in social science, health, and economic research contexts.</p>
+        </div>
+        <div class="glass-card">
+          <h3 class="card-heading"><span class="card-heading-icon">🎓</span> Education</h3>
+          <div class="edu-timeline">
+            <div class="edu-dot"></div>
+            <div class="edu-card">
+              <div class="edu-degree">B.Sc. (Honors) in Statistics and Data Science</div>
+              <div class="edu-school">Jahangirnagar University</div>
+              <div class="edu-location">Savar, Dhaka 1342, Bangladesh</div>
+              <span class="edu-badge">2021 – Present</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Right col -->
+      <div style="display:flex;flex-direction:column;gap:1.5rem">
+        <div class="glass-card">
+          <h3 class="card-heading"><span class="card-heading-icon">🔬</span> Research Interests</h3>
+          <div class="interests-grid">
+            <div class="interest-item">📊 Statistical Modeling</div>
+            <div class="interest-item">🤖 Machine Learning</div>
+            <div class="interest-item">📈 Data Visualization</div>
+            <div class="interest-item">🧬 Biostatistics</div>
+            <div class="interest-item">⏱️ Time Series Analysis</div>
+            <div class="interest-item">💬 NLP</div>
+            <div class="interest-item">💹 Econometrics</div>
+            <div class="interest-item">📋 Survey Methodology</div>
+          </div>
+        </div>
+        <div class="glass-card">
+          <h3 class="card-heading"><span class="card-heading-icon">⭐</span> Highlights</h3>
+          <div class="highlights-grid">
+            <div class="highlight-item"><span class="highlight-icon">📝</span><div><div class="highlight-title">3 Research Articles</div><div class="highlight-desc">Published work in Statistics & Data Science domains</div></div></div>
+            <div class="highlight-item"><span class="highlight-icon">🏛️</span><div><div class="highlight-title">Undergraduate Researcher</div><div class="highlight-desc">Active contributor at Jahangirnagar University</div></div></div>
+            <div class="highlight-item"><span class="highlight-icon">🌐</span><div><div class="highlight-title">Open Science</div><div class="highlight-desc">Sharing research openly on ResearchGate</div></div></div>
+            <div class="highlight-item"><span class="highlight-icon">🤝</span><div><div class="highlight-title">Collaboration Ready</div><div class="highlight-desc">Eager for multidisciplinary research projects</div></div></div>
+          </div>
+        </div>
+        <div class="location-card">
+          <div class="location-card-icon">📍</div>
+          <div>
+            <div class="location-name">Jahangirnagar University</div>
+            <div class="location-addr">Savar, Dhaka 1342, Bangladesh</div>
+            <div class="location-dept">Dept. of Statistics and Data Science</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- RESEARCH -->
+<section id="research">
+  <div class="section-inner">
+    <div class="section-line-top" style="margin-bottom:3.5rem"></div>
+    <div class="section-header">
+      <span class="section-eyebrow">Academic Work</span>
+      <h2 class="section-title">My <span class="accent">Research</span></h2>
+      <div class="section-bar"></div>
+      <p class="section-desc">My published research articles presented in HTML format. Click any article to read the full paper.</p>
+    </div>
+    <div class="research-stats">
+      <div class="rstat"><div class="rstat-icon">📄</div><div class="rstat-num">3</div><div class="rstat-label">Articles</div></div>
+      <div class="rstat"><div class="rstat-icon">🔭</div><div class="rstat-num">∞</div><div class="rstat-label">Curiosity</div></div>
+      <div class="rstat"><div class="rstat-icon">🏛️</div><div class="rstat-num">JU</div><div class="rstat-label">Institution</div></div>
+    </div>
+    <div class="research-grid">
+      <!-- Card 1 -->
+      <div class="research-card rc1">
+        <div class="rc-num">01</div>
+        <div class="rc-top">
+          <div class="rc-icon">📊</div>
+          <span class="rc-status"><span class="rc-status-dot"></span>Personal Research Work</span>
+        </div>
+        <h3 class="rc-title">Naruto Sentiment Analysis Report</h3>
+        <p class="rc-desc">A comprehensive sentiment analysis of Naruto — one of the most influential anime series globally — examining audience emotional responses, character reception, and textual sentiment patterns across fan discourse.</p>
+        <div class="rc-tags">
+          <span class="rc-tag tag-cyan">Sentiment Analysis</span>
+          <span class="rc-tag tag-cyan">Anime</span>
+          <span class="rc-tag tag-cyan">NLP</span>
+        </div>
+        <div class="rc-actions">
+          <a href="research/10_Most_Discussed_Characters_in_the_Naruto_Franchise.html" target="_blank" rel="noopener" class="rc-btn-read">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+            Read Article
+          </a>
+          <a href="research/10_Most_Discussed_Characters_in_the_Naruto_Franchise.html" download class="rc-btn-dl" title="Download">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+          </a>
+        </div>
+        <div class="rc-bottom-line"></div>
+      </div>
+      <!-- Card 2 -->
+      <div class="research-card rc2">
+        <div class="rc-num">02</div>
+        <div class="rc-top">
+          <div class="rc-icon">📈</div>
+          <span class="rc-status"><span class="rc-status-dot"></span>Personal Research Work</span>
+        </div>
+        <h3 class="rc-title">Toy Story 5 Research Article</h3>
+        <p class="rc-desc">An investigative research article on Toy Story 5 — analysing pre-release audience expectations, sentiment trends, and the cultural weight of franchise continuation through a data-driven lens.</p>
+        <div class="rc-tags">
+          <span class="rc-tag tag-indigo">Film Analysis</span>
+          <span class="rc-tag tag-indigo">Sentiment</span>
+          <span class="rc-tag tag-indigo">Statistics</span>
+        </div>
+        <div class="rc-actions">
+          <a href="research/Toy_Story5_Research_Article.html" target="_blank" rel="noopener" class="rc-btn-read">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+            Read Article
+          </a>
+          <a href="research/Toy_Story5_Research_Article.html" download class="rc-btn-dl" title="Download">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/></svg>
+          </a>
+        </div>
+        <div class="rc-bottom-line"></div>
+      </div>
+      <!-- Card 3 -->
+      <div class="research-card rc3">
+        <div class="rc-num">03</div>
+        <div class="rc-top">
+          <div class="rc-icon">🔬</div>
+          <span class="rc-status" style="border-color:rgba(251,191,36,.25);background:rgba(251,191,36,.1);color:#fbbf24"><span class="rc-status-dot" style="background:#fbbf24"></span>Coming Soon</span>
+        </div>
+        <h3 class="rc-title">Anime Sentiment Analysis</h3>
+        <p class="rc-desc">A broader sentiment analysis study spanning multiple anime titles, exploring genre-level emotional tone, community reception patterns, and the application of statistical methods to fan-generated text data.</p>
+        <div class="rc-tags">
+          <span class="rc-tag tag-violet">Corpus Analysis</span>
+          <span class="rc-tag tag-violet">Python</span>
+          <span class="rc-tag tag-violet">R</span>
+        </div>
+        <div class="rc-actions">
+          <span class="rc-btn-read" style="opacity:.45;cursor:not-allowed">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/></svg>
+            Coming Soon
+          </span>
+        </div>
+        <div class="rc-bottom-line"></div>
+      </div>
+    </div>
+    <div class="rg-cta">
+      <div class="rg-cta-text">
+        <h4>Explore more on ResearchGate</h4>
+        <p>Find all my academic profiles and publications</p>
+      </div>
+      <a href="https://www.researchgate.net/profile/Md-Bappi-2" target="_blank" rel="noopener" class="rg-cta-btn">View ResearchGate Profile →</a>
+    </div>
+  </div>
+</section>
+
+<!-- SKILLS -->
+<section id="skills">
+  <div class="section-inner">
+    <div class="section-line-top" style="margin-bottom:3.5rem"></div>
+    <div class="section-header">
+      <span class="section-eyebrow">Expertise</span>
+      <h2 class="section-title">Skills & <span class="accent">Competencies</span></h2>
+      <div class="section-bar"></div>
+      <p class="section-desc">A blend of statistical expertise, programming proficiency, and research acumen developed through academic study and hands-on projects.</p>
+    </div>
+    <div class="skills-grid">
+      <div class="skill-cat-card scc1">
+        <div class="skill-cat-header"><div class="skill-cat-icon">📊</div><span class="skill-cat-name">Statistical Methods</span></div>
+        <div class="skill-item"><div class="skill-meta"><span class="skill-name">Descriptive Statistics</span><span class="skill-pct">95%</span></div><div class="skill-track"><div class="skill-fill fill-cyan" style="width:95%"></div></div></div>
+        <div class="skill-item"><div class="skill-meta"><span class="skill-name">Hypothesis Testing</span><span class="skill-pct">90%</span></div><div class="skill-track"><div class="skill-fill fill-cyan" style="width:90%"></div></div></div>
+        <div class="skill-item"><div class="skill-meta"><span class="skill-name">Regression Analysis</span><span class="skill-pct">88%</span></div><div class="skill-track"><div class="skill-fill fill-cyan" style="width:88%"></div></div></div>
+        <div class="skill-item"><div class="skill-meta"><span class="skill-name">Multivariate Analysis</span><span class="skill-pct">82%</span></div><div class="skill-track"><div class="skill-fill fill-cyan" style="width:82%"></div></div></div>
+        <div class="skill-item"><div class="skill-meta"><span class="skill-name">Time Series Analysis</span><span class="skill-pct">78%</span></div><div class="skill-track"><div class="skill-fill fill-cyan" style="width:78%"></div></div></div>
+      </div>
+      <div class="skill-cat-card scc2">
+        <div class="skill-cat-header"><div class="skill-cat-icon">💻</div><span class="skill-cat-name">Programming & Tools</span></div>
+        <div class="skill-item"><div class="skill-meta"><span class="skill-name">R Programming</span><span class="skill-pct">90%</span></div><div class="skill-track"><div class="skill-fill fill-indigo" style="width:90%"></div></div></div>
+        <div class="skill-item"><div class="skill-meta"><span class="skill-name">SPSS</span><span class="skill-pct">85%</span></div><div class="skill-track"><div class="skill-fill fill-indigo" style="width:85%"></div></div></div>
+        <div class="skill-item"><div class="skill-meta"><span class="skill-name">MS Excel / Power BI</span><span class="skill-pct">88%</span></div><div class="skill-track"><div class="skill-fill fill-indigo" style="width:88%"></div></div></div>
+        <div class="skill-item"><div class="skill-meta"><span class="skill-name">Python</span><span class="skill-pct">82%</span></div><div class="skill-track"><div class="skill-fill fill-indigo" style="width:82%"></div></div></div>
+        <div class="skill-item"><div class="skill-meta"><span class="skill-name">LaTeX</span><span class="skill-pct">75%</span></div><div class="skill-track"><div class="skill-fill fill-indigo" style="width:75%"></div></div></div>
+      </div>
+      <div class="skill-cat-card scc3">
+        <div class="skill-cat-header"><div class="skill-cat-icon">🤖</div><span class="skill-cat-name">Machine Learning</span></div>
+        <div class="skill-item"><div class="skill-meta"><span class="skill-name">Model Evaluation</span><span class="skill-pct">82%</span></div><div class="skill-track"><div class="skill-fill fill-violet" style="width:82%"></div></div></div>
+        <div class="skill-item"><div class="skill-meta"><span class="skill-name">Supervised Learning</span><span class="skill-pct">80%</span></div><div class="skill-track"><div class="skill-fill fill-violet" style="width:80%"></div></div></div>
+        <div class="skill-item"><div class="skill-meta"><span class="skill-name">Feature Engineering</span><span class="skill-pct">78%</span></div><div class="skill-track"><div class="skill-fill fill-violet" style="width:78%"></div></div></div>
+        <div class="skill-item"><div class="skill-meta"><span class="skill-name">Unsupervised Learning</span><span class="skill-pct">74%</span></div><div class="skill-track"><div class="skill-fill fill-violet" style="width:74%"></div></div></div>
+        <div class="skill-item"><div class="skill-meta"><span class="skill-name">Deep Learning (Basics)</span><span class="skill-pct">65%</span></div><div class="skill-track"><div class="skill-fill fill-violet" style="width:65%"></div></div></div>
+      </div>
+      <div class="skill-cat-card scc4">
+        <div class="skill-cat-header"><div class="skill-cat-icon">🔬</div><span class="skill-cat-name">Research Skills</span></div>
+        <div class="skill-item"><div class="skill-meta"><span class="skill-name">Literature Review</span><span class="skill-pct">92%</span></div><div class="skill-track"><div class="skill-fill fill-emerald" style="width:92%"></div></div></div>
+        <div class="skill-item"><div class="skill-meta"><span class="skill-name">Data Collection & Cleaning</span><span class="skill-pct">90%</span></div><div class="skill-track"><div class="skill-fill fill-emerald" style="width:90%"></div></div></div>
+        <div class="skill-item"><div class="skill-meta"><span class="skill-name">Academic Writing</span><span class="skill-pct">88%</span></div><div class="skill-track"><div class="skill-fill fill-emerald" style="width:88%"></div></div></div>
+        <div class="skill-item"><div class="skill-meta"><span class="skill-name">Research Design</span><span class="skill-pct">85%</span></div><div class="skill-track"><div class="skill-fill fill-emerald" style="width:85%"></div></div></div>
+        <div class="skill-item"><div class="skill-meta"><span class="skill-name">Presentation Skills</span><span class="skill-pct">87%</span></div><div class="skill-track"><div class="skill-fill fill-emerald" style="width:87%"></div></div></div>
+      </div>
+    </div>
+    <div class="tools-section">
+      <div class="tools-title">Tools & Technologies</div>
+      <div class="tools-wrap">
+        <div class="tool-chip">🔵 R</div>
+        <div class="tool-chip">🐍 Python</div>
+        <div class="tool-chip">📉 SPSS</div>
+        <div class="tool-chip">📗 Excel</div>
+        <div class="tool-chip">📊 Power BI</div>
+        <div class="tool-chip">✍️ LaTeX</div>
+        <div class="tool-chip">🔗 Git</div>
+        <div class="tool-chip">📋 Tableau</div>
+        <div class="tool-chip">📔 Jupyter</div>
+        <div class="tool-chip">🖥️ RStudio</div>
+      </div>
+    </div>
+    <div class="soft-skills">
+      <div class="soft-item"><div class="soft-emoji">🧠</div><div class="soft-pct">95%</div><div class="soft-label">Critical Thinking</div></div>
+      <div class="soft-item"><div class="soft-emoji">💡</div><div class="soft-pct">92%</div><div class="soft-label">Problem Solving</div></div>
+      <div class="soft-item"><div class="soft-emoji">🤝</div><div class="soft-pct">90%</div><div class="soft-label">Team Collaboration</div></div>
+      <div class="soft-item"><div class="soft-emoji">🗣️</div><div class="soft-pct">88%</div><div class="soft-label">Communication</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="section-inner" style="position:relative;z-index:1">
+    <div class="section-line-top" style="margin-bottom:3.5rem"></div>
+    <div class="section-header">
+      <span class="section-eyebrow">Let's Connect</span>
+      <h2 class="section-title">Get In <span class="accent">Touch</span></h2>
+      <div class="section-bar"></div>
+      <p class="section-desc">I'm always open to research collaborations, academic discussions, and networking with fellow researchers and data enthusiasts.</p>
+    </div>
+    <div class="contact-grid">
+      <!-- Contact info -->
+      <div>
+        <h3 class="contact-info-title">Contact Information</h3>
+        <div class="contact-items">
+          <a href="mailto:shimulbappi.sds49@gmail.com" class="contact-item ci-email">
+            <div class="ci-icon-wrap" style="color:#f87171">
+              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+            </div>
+            <div><div class="ci-label">Email</div><div class="ci-value">shimulbappi.sds49@gmail.com</div></div>
+            <svg class="ci-arrow" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+          </a>
+          <a href="https://maps.google.com/?q=Jahangirnagar+University" target="_blank" rel="noopener" class="contact-item ci-loc">
+            <div class="ci-icon-wrap" style="color:var(--cyan)">
+              <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+            </div>
+            <div><div class="ci-label">Location</div><div class="ci-value">Jahangirnagar University, Savar, Dhaka</div></div>
+            <svg class="ci-arrow" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+          </a>
+          <a href="https://github.com/Shimul-Bappi" target="_blank" rel="noopener" class="contact-item ci-gh">
+            <div class="ci-icon-wrap" style="color:var(--white)">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg>
+            </div>
+            <div><div class="ci-label">GitHub</div><div class="ci-value">github.com/Shimul-Bappi</div></div>
+            <svg class="ci-arrow" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+          </a>
+          <a href="https://www.linkedin.com/in/shimul-bappi/" target="_blank" rel="noopener" class="contact-item ci-li">
+            <div class="ci-icon-wrap" style="color:#60a5fa">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+            </div>
+            <div><div class="ci-label">LinkedIn</div><div class="ci-value">linkedin.com/in/shimul-bappi</div></div>
+            <svg class="ci-arrow" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+          </a>
+          <a href="https://www.researchgate.net/profile/Md-Bappi-2" target="_blank" rel="noopener" class="contact-item ci-rg">
+            <div class="ci-icon-wrap" style="color:#2dd4bf">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19.586 0c-.818 0-1.508.19-2.073.565-.563.377-.97.936-1.213 1.68a12.52 12.52 0 00-.31 2.813v.564h-3.12v1.89h3.12v11.97H18.9V7.512h2.652V5.621H18.9V4.19c0-.625.15-1.086.45-1.378.3-.29.768-.437 1.407-.437.317 0 .614.03.89.09l.354.08V.13l-.188-.04a5.755 5.755 0 00-1.227-.09zM7.79 5.335c-3.84 0-6.948 3.147-6.948 7.032S3.95 19.4 7.79 19.4c3.838 0 6.948-3.147 6.948-7.033 0-3.885-3.11-7.032-6.948-7.032zm0 2.043c2.741 0 4.96 2.24 4.96 5.01 0 2.769-2.219 5.01-4.96 5.01-2.742 0-4.96-2.24-4.96-5.01 0-2.77 2.218-5.01 4.96-5.01zm.035 1.96a3.05 3.05 0 00-3.05 3.05 3.05 3.05 0 003.05 3.05 3.05 3.05 0 003.05-3.05 3.05 3.05 0 00-3.05-3.05zm0 1.22a1.83 1.83 0 110 3.66 1.83 1.83 0 010-3.66z"/></svg>
+            </div>
+            <div><div class="ci-label">ResearchGate</div><div class="ci-value">researchgate.net/profile/Md-Bappi-2</div></div>
+            <svg class="ci-arrow" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+          </a>
+        </div>
+        <div class="contact-social-box">
+          <div class="contact-social-label">Follow me on social media</div>
+          <div class="contact-social-icons">
+            <a href="https://github.com/Shimul-Bappi" target="_blank" rel="noopener" class="social-icon-btn" title="GitHub"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg></a>
+            <a href="https://www.linkedin.com/in/shimul-bappi/" target="_blank" rel="noopener" class="social-icon-btn" title="LinkedIn"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+            <a href="https://www.researchgate.net/profile/Md-Bappi-2" target="_blank" rel="noopener" class="social-icon-btn" title="ResearchGate"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19.586 0c-.818 0-1.508.19-2.073.565-.563.377-.97.936-1.213 1.68a12.52 12.52 0 00-.31 2.813v.564h-3.12v1.89h3.12v11.97H18.9V7.512h2.652V5.621H18.9V4.19c0-.625.15-1.086.45-1.378.3-.29.768-.437 1.407-.437.317 0 .614.03.89.09l.354.08V.13l-.188-.04a5.755 5.755 0 00-1.227-.09zM7.79 5.335c-3.84 0-6.948 3.147-6.948 7.032S3.95 19.4 7.79 19.4c3.838 0 6.948-3.147 6.948-7.033 0-3.885-3.11-7.032-6.948-7.032zm0 2.043c2.741 0 4.96 2.24 4.96 5.01 0 2.769-2.219 5.01-4.96 5.01-2.742 0-4.96-2.24-4.96-5.01 0-2.77 2.218-5.01 4.96-5.01zm.035 1.96a3.05 3.05 0 00-3.05 3.05 3.05 3.05 0 003.05 3.05 3.05 3.05 0 003.05-3.05 3.05 3.05 0 00-3.05-3.05zm0 1.22a1.83 1.83 0 110 3.66 1.83 1.83 0 010-3.66z"/></svg></a>
+            <a href="https://x.com/Bappi_Shimul" target="_blank" rel="noopener" class="social-icon-btn" title="X"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+            <a href="https://www.facebook.com/Shimul.Bappi49" target="_blank" rel="noopener" class="social-icon-btn" title="Facebook"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+            <a href="https://www.instagram.com/shimul_bappi/" target="_blank" rel="noopener" class="social-icon-btn" title="Instagram"><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></a>
+          </div>
+        </div>
+      </div>
+      <!-- Contact form -->
+      <div class="contact-form-card">
+        <h3 class="form-title">Send Me a Message</h3>
+        <p class="form-subtitle">Whether it's a research inquiry, collaboration proposal, or just a friendly hello — I'd love to hear from you!</p>
+        <div class="form-row">
+          <div class="form-group"><label class="form-label">Your Name</label><input type="text" class="form-input" placeholder="John Doe" id="fname"/></div>
+          <div class="form-group"><label class="form-label">Your Email</label><input type="email" class="form-input" placeholder="john@example.com" id="femail"/></div>
+        </div>
+        <div class="form-single"><label class="form-label">Subject</label><input type="text" class="form-input" placeholder="Research Collaboration Inquiry" id="fsubject"/></div>
+        <div class="form-single" style="margin-bottom:0"><label class="form-label">Message</label><textarea class="form-textarea" placeholder="Hello Shimul, I'd love to discuss..." id="fmessage"></textarea></div>
+        <div class="form-actions">
+          <button class="form-submit" onclick="sendEmail()">
+            <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/></svg>
+            Send Message
+          </button>
+          <a href="mailto:shimulbappi.sds49@gmail.com" class="form-email-icon" title="Direct Email">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-brand-row">
+          <div class="footer-logo-icon">SB</div>
+          <div><div class="footer-brand-name">Md. Shimul Ahmed Bappi</div><div class="footer-brand-role">Undergraduate Researcher</div></div>
+        </div>
+        <p class="footer-desc">Department of Statistics and Data Science<br>Jahangirnagar University<br>Savar, Dhaka 1342, Bangladesh</p>
+        <div class="footer-social-row">
+          <a href="https://github.com/Shimul-Bappi" target="_blank" rel="noopener" class="footer-social-btn" title="GitHub"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.484 2 12.017c0 4.425 2.865 8.18 6.839 9.504.5.092.682-.217.682-.483 0-.237-.008-.868-.013-1.703-2.782.605-3.369-1.343-3.369-1.343-.454-1.158-1.11-1.466-1.11-1.466-.908-.62.069-.608.069-.608 1.003.07 1.531 1.032 1.531 1.032.892 1.53 2.341 1.088 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.113-4.555-4.951 0-1.093.39-1.988 1.029-2.688-.103-.253-.446-1.272.098-2.65 0 0 .84-.27 2.75 1.026A9.564 9.564 0 0112 6.844c.85.004 1.705.115 2.504.337 1.909-1.296 2.747-1.027 2.747-1.027.546 1.379.202 2.398.1 2.651.64.7 1.028 1.595 1.028 2.688 0 3.848-2.339 4.695-4.566 4.943.359.309.678.92.678 1.855 0 1.338-.012 2.419-.012 2.747 0 .268.18.58.688.482A10.019 10.019 0 0022 12.017C22 6.484 17.522 2 12 2z"/></svg></a>
+          <a href="https://www.linkedin.com/in/shimul-bappi/" target="_blank" rel="noopener" class="footer-social-btn" title="LinkedIn"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg></a>
+          <a href="https://www.researchgate.net/profile/Md-Bappi-2" target="_blank" rel="noopener" class="footer-social-btn" title="ResearchGate"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M19.586 0c-.818 0-1.508.19-2.073.565-.563.377-.97.936-1.213 1.68a12.52 12.52 0 00-.31 2.813v.564h-3.12v1.89h3.12v11.97H18.9V7.512h2.652V5.621H18.9V4.19c0-.625.15-1.086.45-1.378.3-.29.768-.437 1.407-.437.317 0 .614.03.89.09l.354.08V.13l-.188-.04a5.755 5.755 0 00-1.227-.09zM7.79 5.335c-3.84 0-6.948 3.147-6.948 7.032S3.95 19.4 7.79 19.4c3.838 0 6.948-3.147 6.948-7.033 0-3.885-3.11-7.032-6.948-7.032zm0 2.043c2.741 0 4.96 2.24 4.96 5.01 0 2.769-2.219 5.01-4.96 5.01-2.742 0-4.96-2.24-4.96-5.01 0-2.77 2.218-5.01 4.96-5.01zm.035 1.96a3.05 3.05 0 00-3.05 3.05 3.05 3.05 0 003.05 3.05 3.05 3.05 0 003.05-3.05 3.05 3.05 0 00-3.05-3.05zm0 1.22a1.83 1.83 0 110 3.66 1.83 1.83 0 010-3.66z"/></svg></a>
+          <a href="https://x.com/Bappi_Shimul" target="_blank" rel="noopener" class="footer-social-btn" title="X"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.746l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg></a>
+          <a href="https://www.facebook.com/Shimul.Bappi49" target="_blank" rel="noopener" class="footer-social-btn" title="Facebook"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></a>
+          <a href="https://www.instagram.com/shimul_bappi/" target="_blank" rel="noopener" class="footer-social-btn" title="Instagram"><svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg></a>
+        </div>
+      </div>
+      <div>
+        <h4 class="footer-col-title">Quick Links</h4>
+        <ul class="footer-links">
+          <li><button onclick="scrollToSection('home')"><span class="footer-dot"></span>Home</button></li>
+          <li><button onclick="scrollToSection('about')"><span class="footer-dot"></span>About</button></li>
+          <li><button onclick="scrollToSection('research')"><span class="footer-dot"></span>Research</button></li>
+          <li><button onclick="scrollToSection('skills')"><span class="footer-dot"></span>Skills</button></li>
+          <li><button onclick="scrollToSection('contact')"><span class="footer-dot"></span>Contact</button></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="footer-col-title">Research Articles</h4>
+        <ul class="footer-links">
+          <li><a href="research/10_Most_Discussed_Characters_in_the_Naruto_Franchise.html" target="_blank" rel="noopener"><span class="footer-dot"></span>Naruto Sentiment Analysis</a></li>
+          <li><a href="research/Toy_Story5_Research_Article.html" target="_blank" rel="noopener"><span class="footer-dot"></span>Toy Story 5 Research Article</a></li>
+          <li><span style="display:flex;align-items:center;gap:.5rem;color:var(--gray6);font-size:.83rem"><span class="footer-dot" style="background:rgba(251,191,36,.4)"></span>Anime Sentiment Analysis (Coming Soon)</span></li>
+          <li><a href="https://www.researchgate.net/profile/Md-Bappi-2" target="_blank" rel="noopener" style="color:rgba(0,204,187,0.7)"><span class="footer-dot" style="background:rgba(0,204,187,0.5)"></span>View on ResearchGate</a></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p class="footer-copy">© <span id="year"></span> Md. Shimul Ahmed Bappi. All rights reserved. · Dept. of Statistics and Data Science, JU</p>
+    <button class="back-top" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+      Back to top
+      <div class="back-top-icon"><svg width="10" height="10" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/></svg></div>
+    </button>
+  </div>
+</footer>
+
+<script>
+// Year
+document.getElementById('year').textContent = new Date().getFullYear();
+
+// Nav scroll effect + active section
+const navbar = document.getElementById('navbar');
+const sections = ['home','about','research','skills','contact'];
+
+window.addEventListener('scroll', () => {
+  navbar.classList.toggle('scrolled', window.scrollY > 20);
+  const scrollY = window.scrollY + 80;
+  for (const id of sections) {
+    const el = document.getElementById(id);
+    if (!el) continue;
+    const top = el.offsetTop;
+    const bottom = top + el.offsetHeight;
+    if (scrollY >= top && scrollY < bottom) {
+      document.querySelectorAll('[data-section]').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll(`[data-section="${id}"]`).forEach(b => b.classList.add('active'));
+      break;
+    }
+  }
+}, {passive:true});
+
+// Mobile menu
+function toggleMenu() {
+  const menu = document.getElementById('mobileMenu');
+  const ham = document.getElementById('hamburger');
+  menu.classList.toggle('open');
+  ham.classList.toggle('open');
+}
+
+// Scroll to section
+function scrollToSection(id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  window.scrollTo({top: el.offsetTop - 64, behavior:'smooth'});
+  document.getElementById('mobileMenu').classList.remove('open');
+  document.getElementById('hamburger').classList.remove('open');
+}
+
+// Typewriter
+const titles = ['Data Scientist','Statistical Researcher','Aspiring Academic','ML Enthusiast'];
+let tIdx = 0, cIdx = 0, deleting = false;
+const tw = document.getElementById('typewriterText');
+function typeStep() {
+  const cur = titles[tIdx];
+  const speed = deleting ? 60 : 110;
+  if (!deleting && cIdx < cur.length) {
+    tw.textContent = cur.slice(0, ++cIdx);
+  } else if (deleting && cIdx > 0) {
+    tw.textContent = cur.slice(0, --cIdx);
+  } else if (!deleting && cIdx === cur.length) {
+    setTimeout(() => { deleting = true; typeStep(); }, 1800); return;
+  } else if (deleting && cIdx === 0) {
+    deleting = false;
+    tIdx = (tIdx + 1) % titles.length;
+  }
+  setTimeout(typeStep, speed);
+}
+typeStep();
+
+// Send email from form
+function sendEmail() {
+  const subject = document.getElementById('fsubject').value || 'Message from Portfolio';
+  const name = document.getElementById('fname').value;
+  const email = document.getElementById('femail').value;
+  const msg = document.getElementById('fmessage').value;
+  const body = (name ? 'From: ' + name + (email ? ' <' + email + '>' : '') + '\n\n' : '') + msg;
+  window.location.href = 'mailto:shimulbappi.sds49@gmail.com?subject=' + encodeURIComponent(subject) + '&body=' + encodeURIComponent(body);
+}
+</script>
+</body>
+</html>

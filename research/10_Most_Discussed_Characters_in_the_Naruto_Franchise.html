@@ -1,0 +1,1100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sentiment Analysis of the 10 Most Discussed Characters in the Naruto Franchise</title>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Source+Sans+3:wght@300;400;600;700&family=Source+Code+Pro:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --orange: #E85D04;
+    --dark-orange: #9D0208;
+    --navy: #03071E;
+    --mid-navy: #14213D;
+    --gold: #F48C06;
+    --light: #FFF8F0;
+    --text: #1A1A2E;
+    --muted: #5A5A72;
+    --border: #D9C5B2;
+    --highlight: #FAD7A0;
+    --positive: #2D7D46;
+    --negative: #C0392B;
+    --neutral: #1A6FA0;
+    --mixed: #8E44AD;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'EB Garamond', Georgia, serif;
+    background: #F5EFE6;
+    color: var(--text);
+    font-size: 10.5pt;
+    line-height: 1.65;
+  }
+
+  /* Page wrapper simulating journal layout */
+  .page-wrap {
+    max-width: 1000px;
+    margin: 0 auto;
+    background: #fff;
+    box-shadow: 0 4px 40px rgba(0,0,0,0.18);
+  }
+
+  /* ── COVER HEADER ── */
+  .cover-header {
+    background: var(--navy);
+    color: white;
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .cover-header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23E85D04' fill-opacity='0.06'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 1;
+  }
+  .journal-banner {
+    background: var(--orange);
+    padding: 8px 40px;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 9pt;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: white;
+    position: relative;
+  }
+  .cover-content {
+    padding: 40px 48px 36px;
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    gap: 0;
+  }
+  .cover-text-block {
+    flex: 1;
+    min-width: 0;
+    padding-right: 24px;
+  }
+  .cover-image-block {
+    flex-shrink: 0;
+    width: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    position: relative;
+  }
+  .cover-image-block img {
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+    object-fit: contain;
+    object-position: center bottom;
+    filter: drop-shadow(0 4px 24px rgba(232,93,4,0.35));
+    display: block;
+    position: relative;
+    z-index: 2;
+  }
+
+  .paper-title {
+    font-family: 'EB Garamond', serif;
+    font-size: 21pt;
+    font-weight: 700;
+    line-height: 1.25;
+    color: white;
+    margin-bottom: 24px;
+    max-width: 820px;
+  }
+  .paper-title em {
+    color: var(--gold);
+    font-style: italic;
+  }
+  .authors-block {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-bottom: 24px;
+  }
+  .author-card {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 4px;
+    padding: 10px 16px;
+    font-family: 'Source Sans 3', sans-serif;
+  }
+  .author-name { font-size: 10pt; font-weight: 700; color: white; }
+  .author-affil { font-size: 8.5pt; color: rgba(255,255,255,0.65); margin-top: 2px; }
+  .author-email { font-size: 8pt; color: var(--gold); margin-top: 2px; }
+
+.meta-row {
+  display: flex;
+  justify-content: flex-start;
+  gap: 28px;
+  flex-wrap: nowrap; /* Forces everything on the exact same line */
+  
+  /* Pushes the whole row down */
+  margin-top: 24px;  /* Adjust this number if you want it even lower */
+  padding-top: 16px;
+  border-top: 1px solid rgba(255,255,255,0.15);
+  
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 8.0pt;
+  color: rgba(255,255,255,0.55);
+}
+
+/* Forces each text block to stay intact on that line */
+.meta-row span {
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.meta-row span strong { 
+  color: rgba(255,255,255,0.85); 
+}
+
+  /* ── TWO-COLUMN BODY ── */
+  .two-col-body {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    border-top: 3px solid var(--orange);
+  }
+  .col { padding: 28px 32px; }
+  .col:first-child { border-right: 1px solid var(--border); }
+
+  /* ── ABSTRACT ── */
+  .abstract-box {
+    border: 1px solid var(--border);
+    border-left: 4px solid var(--orange);
+    background: #FDF8F3;
+    padding: 16px 20px;
+    margin: 0 32px 0;
+    border-radius: 0 4px 4px 0;
+  }
+  .abstract-label {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 8pt;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--orange);
+    margin-bottom: 8px;
+  }
+  .abstract-box p {
+    font-size: 9.5pt;
+    line-height: 1.6;
+    text-align: justify;
+    color: #2A2A3E;
+  }
+  .keywords-line {
+    margin-top: 10px;
+    font-size: 9.5pt;
+    color: var(--muted);
+  }
+  .keywords-line strong { color: var(--text); font-style: italic; }
+
+  /* ── SECTION HEADINGS ── */
+  h2.section-head {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 10pt;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: white;
+    background: var(--mid-navy);
+    padding: 5px 10px;
+    margin: 22px 0 10px;
+    border-left: 4px solid var(--orange);
+  }
+
+  /* ── INLINE METRIC CARDS ── */
+  .metric-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin: 14px 0;
+  }
+  .metric-card {
+    background: #fff;
+    border: 1px solid var(--rule-light);
+    border-radius: 3px;
+    padding: 10px 12px;
+    text-align: center;
+  }
+  .metric-val {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 18pt;
+    font-weight: 600;
+    color: var(--rule);
+    display: block;
+    line-height: 1;
+    margin-bottom: 3px;
+  }
+  .metric-lbl {
+    font-size: 7pt;
+    font-family: 'Noto Sans', sans-serif;
+    text-transform: uppercase;
+    letter-spacing: .08em;
+    color: #888;
+  }
+
+  h3.subsection-head {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 9.5pt;
+    font-weight: 700;
+    color: var(--dark-orange);
+    margin: 14px 0 6px;
+    border-bottom: 1px dotted var(--border);
+    padding-bottom: 3px;
+  }
+  p { margin-bottom: 8px; text-align: justify; font-size: 9.8pt; }
+
+  /* ── FULL-WIDTH SECTIONS ── */
+  .full-width {
+    grid-column: 1 / -1;
+    padding: 0 32px 24px;
+    border-top: 1px solid var(--border);
+  }
+  .full-width-inner { padding: 20px 0 0; }
+
+  /* ── CHARACTER GALLERY ── */
+  .char-gallery {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 10px;
+    margin: 16px 0;
+  }
+  .char-card {
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+    background: white;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .char-card:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.13); }
+  .char-img-wrap {
+    height: 120px;
+    overflow: hidden;
+    background: linear-gradient(135deg, var(--navy) 0%, var(--mid-navy) 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  .char-img-wrap img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: top center;
+  }
+  .char-rank {
+    position: absolute;
+    top: 5px;
+    left: 5px;
+    background: var(--orange);
+    color: white;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 8pt;
+    font-weight: 700;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .char-info { padding: 7px 8px 8px; }
+  .char-name {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 9pt;
+    font-weight: 700;
+    color: var(--navy);
+  }
+  .char-series {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 7.5pt;
+    color: var(--muted);
+    margin-top: 1px;
+  }
+  .char-mentions {
+    font-family: 'Source Code Pro', monospace;
+    font-size: 8pt;
+    color: var(--orange);
+    margin-top: 3px;
+  }
+  .sentiment-pill {
+    display: inline-block;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 7pt;
+    font-weight: 600;
+    padding: 1px 6px;
+    border-radius: 10px;
+    margin-top: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .pill-positive { background: #D4EDDA; color: var(--positive); }
+  .pill-negative { background: #F8D7DA; color: var(--negative); }
+  .pill-mixed { background: #E8DAEF; color: var(--mixed); }
+
+  /* ── DATA TABLES ── */
+  .ieee-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 8.5pt;
+    margin: 12px 0 6px;
+  }
+  .table-caption {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 8.5pt;
+    font-weight: 600;
+    font-style: italic;
+    text-align: center;
+    color: var(--text);
+    margin: 4px 0 10px;
+  }
+  .ieee-table thead tr {
+    background: var(--mid-navy);
+    color: white;
+  }
+  .ieee-table thead th {
+    padding: 7px 10px;
+    text-align: center;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    border-right: 1px solid rgba(255,255,255,0.15);
+    white-space: nowrap;
+  }
+  .ieee-table thead th:first-child { text-align: left; }
+  .ieee-table tbody tr { border-bottom: 1px solid var(--border); }
+  .ieee-table tbody tr:nth-child(even) { background: #F9F5F0; }
+  .ieee-table tbody tr:hover { background: var(--highlight); }
+  .ieee-table td {
+    padding: 6px 10px;
+    text-align: center;
+    vertical-align: middle;
+  }
+  .ieee-table td:first-child { text-align: left; font-weight: 600; }
+
+  .bar-cell { display: flex; align-items: center; gap: 6px; justify-content: center; }
+  .mini-bar {
+    height: 8px;
+    border-radius: 4px;
+    min-width: 2px;
+  }
+  .bar-pos { background: #2D7D46; }
+  .bar-neg { background: #C0392B; }
+  .bar-neu { background: #1A6FA0; }
+  .bar-val { font-size: 7.5pt; color: var(--muted); white-space: nowrap; }
+
+  /* ── METHODOLOGY VISUAL ── */
+  .method-flow {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin: 14px 0;
+    justify-content: center;
+  }
+  .method-step {
+    background: var(--mid-navy);
+    color: white;
+    padding: 8px 12px;
+    border-radius: 4px;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 8pt;
+    font-weight: 600;
+    text-align: center;
+    min-width: 90px;
+    line-height: 1.3;
+  }
+  .method-step .step-num {
+    display: block;
+    color: var(--gold);
+    font-size: 7pt;
+    margin-bottom: 2px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+  .method-arrow {
+    color: var(--orange);
+    font-size: 14pt;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  /* ── SENTIMENT CHART ── */
+  .sentiment-chart {
+    margin: 14px 0;
+  }
+  .senti-row {
+    display: grid;
+    grid-template-columns: 85px 1fr;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 5px;
+  }
+  .senti-name {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 8.5pt;
+    font-weight: 600;
+    text-align: right;
+    color: var(--text);
+  }
+  .senti-bars { display: flex; height: 14px; border-radius: 3px; overflow: hidden; }
+  .senti-pos { background: var(--positive); }
+  .senti-neg { background: var(--negative); }
+  .senti-neu { background: var(--neutral); }
+  .senti-legend {
+    display: flex;
+    gap: 14px;
+    justify-content: center;
+    margin-top: 10px;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 8pt;
+    color: var(--muted);
+  }
+  .legend-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 2px;
+    margin-right: 4px;
+    vertical-align: middle;
+  }
+
+  /* ── STATS CALLOUTS ── */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin: 14px 0;
+  }
+  .stat-box {
+    border: 1px solid var(--border);
+    border-top: 3px solid var(--orange);
+    padding: 10px 12px;
+    text-align: center;
+    border-radius: 0 0 4px 4px;
+  }
+  .stat-num {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 18pt;
+    font-weight: 700;
+    color: var(--orange);
+    line-height: 1;
+  }
+  .stat-label {
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 7.5pt;
+    color: var(--muted);
+    margin-top: 3px;
+    line-height: 1.3;
+  }
+
+  /* ── FINDINGS PANELS ── */
+  .finding-panel {
+    border-left: 3px solid var(--orange);
+    background: #FDF8F3;
+    padding: 10px 14px;
+    margin: 10px 0;
+    border-radius: 0 4px 4px 0;
+  }
+  .finding-panel p { font-size: 9.5pt; }
+  .finding-panel strong { color: var(--dark-orange); }
+
+  /* ── REFERENCES ── */
+  .references ol {
+    padding-left: 20px;
+    font-size: 9pt;
+    line-height: 1.55;
+    color: var(--muted);
+  }
+  .references ol li { margin-bottom: 5px; }
+  .references ol li em { color: var(--text); }
+
+  /* ── FOOTER ── */
+  .page-footer {
+    background: var(--navy);
+    color: rgba(255,255,255,0.45);
+    text-align: center;
+    padding: 14px;
+    font-family: 'Source Sans 3', sans-serif;
+    font-size: 8pt;
+    border-top: 2px solid var(--orange);
+  }
+  .page-footer strong { color: var(--gold); }
+
+  /* ── AVATAR FALLBACKS (CSS-drawn characters) ── */
+  .avatar-naruto { background: linear-gradient(160deg, #F48C06 0%, #E85D04 100%); }
+  .avatar-sasuke { background: linear-gradient(160deg, #3A0CA3 0%, #14213D 100%); }
+  .avatar-boruto { background: linear-gradient(160deg, #0096C7 0%, #023E8A 100%); }
+  .avatar-itachi { background: linear-gradient(160deg, #370617 0%, #6A040F 100%); }
+  .avatar-kakashi { background: linear-gradient(160deg, #4A4A6A 0%, #1A1A2E 100%); }
+  .avatar-madara { background: linear-gradient(160deg, #370617 0%, #03071E 100%); }
+  .avatar-kawaki { background: linear-gradient(160deg, #006D77 0%, #03071E 100%); }
+  .avatar-sakura { background: linear-gradient(160deg, #C77DFF 0%, #7B2D8B 100%); }
+  .avatar-obito { background: linear-gradient(160deg, #E76F51 0%, #264653 100%); }
+  .avatar-pain { background: linear-gradient(160deg, #560BAD 0%, #03071E 100%); }
+
+  .avatar-icon {
+    font-size: 38px;
+    opacity: 0.7;
+  }
+
+  @media print {
+    body { background: white; }
+    .page-wrap { box-shadow: none; }
+  }
+</style>
+</head>
+<body>
+<div class="page-wrap">
+
+  <!-- COVER HEADER -->
+  <header class="cover-header">
+    <div class="journal-banner">IEEE Style Research Article &nbsp;|&nbsp; Natural Language Processing &nbsp;|&nbsp; Web Scraping &nbsp;|&nbsp; Anime Fandom Analysis &nbsp;|&nbsp; June 2026</div>
+    <div class="cover-content">
+      <!-- Left: Text content -->
+      <div class="cover-text-block">
+        <h1 class="paper-title">Sentiment Analysis of the <em>10 Most Discussed Characters</em> in the Naruto Franchise: A YouTube-Based Study Across <em>Naruto, Naruto Shippuden,</em> and <em>Boruto.</em></h1>
+        <div class="authors-block">
+          <div class="author-card">
+            <div class="author-name">Md. Shimul Ahmed Bappi</div>
+            <div class="author-affil" style="margin-top:4px;">Undergraduate Aspiring Researcher &nbsp;·&nbsp; Department of Statistics and Data Science<br>Jahangirnagar University, Savar, Dhaka 1342</div>
+            <div class="author-email">shimulbappi.sds49@gmail.com</div>
+          </div>
+        </div>
+        <div class="meta-row">
+          <span><strong>Status:</strong> Preprint / Independent Study</span>
+          <span><strong>Dataset:</strong> YouTube Data API v3</span>
+          <span><strong>Videos Analyzed:</strong> 46</span>
+          <span><strong>Comments Analyzed:</strong> 3,309</span>
+          <span><strong>Method:</strong> VADER Sentiment Analysis</span>
+        </div>
+      </div>
+
+      <!-- Right: Naruto characters image -->
+      <div class="cover-image-block">
+        <img src="https://media1.giphy.com/media/v1.Y2lkPTc5MGI3NjExZTU0eXA2bnc5c3g5a2N1ZTE5OHhwdTlnN204ZnJpdGdqeHE3YzVsZSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/XbIlkTEyqC1Xte7pcJ/giphy.gif"
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ABSTRACT (full-width) -->
+  <div style="padding: 20px 0 16px;">
+    <div class="abstract-box">
+      <div class="abstract-label">Abstract</div>
+      <p>The <em>Naruto</em> franchise spanning <em>Naruto</em>, <em>Naruto Shippuden</em>, and <em>Boruto: Naruto Next Generations,</em> commands one of the most active anime communities on YouTube. This study applies sentiment analysis to 3,309 YouTube comments collected from 46 franchise-related videos using the YouTube Data API v3. Comments were preprocessed, and character mentions were identified via name-matching and alias resolution. The ten most frequently mentioned characters were selected, and VADER (Valence Aware Dictionary and sEntiment Reasoner) was applied to classify comment sentiment as positive, negative, or neutral. Results indicate that <em>Naruto Uzumaki</em> leads in discussion volume (590 mentions, avg. sentiment +0.121), while <em>Pain</em> is the sole character with an overall negative sentiment score (avg. −0.176). Legacy characters from the original series and <em>Shippuden</em> dominate fan discourse, suggesting that nostalgia and narrative depth remain primary drivers of audience engagement. This study demonstrates the viability of YouTube comment mining as a method for quantifying anime character popularity and fan perception.</p>
+      <div class="keywords-line"><strong>Keywords :</strong> sentiment analysis, VADER, Naruto franchise, YouTube comments, natural language processing, anime fandom, character perception, text mining</div>
+    </div>
+  </div>
+
+  <!-- STATS CALLOUTS (full-width) -->
+  <div style="padding: 0 32px 12px;">
+    <div class="stats-row">
+      <div class="stat-box">
+        <div class="stat-num">46</div>
+        <div class="stat-label">YouTube Videos<br>Analyzed</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">3,309</div>
+        <div class="stat-label">Total Comments<br>Processed</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">10</div>
+        <div class="stat-label">Top Characters<br>Identified</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-num">590</div>
+        <div class="stat-label">Peak Mentions<br>(Naruto Uzumaki)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TWO-COLUMN BODY -->
+  <div class="two-col-body">
+
+    <!-- LEFT COLUMN -->
+    <div class="col">
+      <h2 class="section-head">I. Introduction</h2>
+      <p>Anime franchises occupy a unique position in global popular culture, generating sustained fan engagement that extends well beyond the original broadcast period. The <em>Naruto</em> franchise, created by Masashi Kishimoto and expanded through <em>Naruto Shippuden</em> and <em>Boruto: Naruto Next Generations</em>, is among the most globally recognized anime properties, with a substantial and vocal online community [1].</p>
+      <p>YouTube has emerged as a primary platform for fan discourse, hosting character discussions, reaction videos, retrospectives, and ranking debates. The comment sections of these videos constitute a rich, largely unstructured corpus of audience opinion. Sentiment analysis, as a branch of natural language processing (NLP), provides a systematic mechanism for quantifying the emotional polarity embedded within such text data [2].</p>
+      <p>Prior research has applied sentiment analysis to social media platforms including Twitter and Reddit for anime discourse [3], yet YouTube despite its dominance as a video platform remains underutilized as a research corpus in this domain. This study addresses that gap by focusing on YouTube comment data to measure character salience and audience sentiment within the <em>Naruto</em> universe.</p>
+
+      <h2 class="section-head">II. Objectives</h2>
+      <p>The specific objectives of this study are:</p>
+      <p><strong>O1.</strong> To identify the ten most frequently discussed <em>Naruto</em> franchise characters in YouTube comment data.</p>
+      <p><strong>O2.</strong> To classify the sentiment of comments mentioning each character as positive, negative, or neutral using VADER.</p>
+      <p><strong>O3.</strong> To compare character popularity and fan sentiment, and to interpret patterns in relation to character narrative roles across the three series.</p>
+
+      <h2 class="section-head">III. Methodology</h2>
+      <h3 class="subsection-head">A. Data Collection</h3>
+      <p>Data were collected via the YouTube Data API v3. Search queries employed franchise-related keywords including character names, arc titles, and series identifiers. A total of 46 videos were selected based on relevance, and 3,309 user comments were retrieved. Each comment was associated with its parent video, upload date, and like count.</p>
+
+      <h3 class="subsection-head">B. Preprocessing</h3>
+      <p>Raw comment text was cleaned by removing URLs, special characters, HTML entities, and excess whitespace. Text was lowercased to ensure consistent matching. Comments were retained only if they contained at least one recognizable character reference.</p>
+
+      <h3 class="subsection-head">C. Character Identification</h3>
+      <p>Character mentions were identified through a curated dictionary of canonical names and commonly used aliases (e.g., "Minato" for the Fourth Hokage, "Tobi" for Obito). Mention counts were aggregated per character to determine the top ten most discussed individuals.</p>
+
+      <h3 class="subsection-head">D. Sentiment Analysis (VADER Lexicon Scoring)</h3>
+      <p>VADER (Valence Aware Dictionary and sEntiment Reasoner) was applied to each comment. VADER produces a compound score ranging from −1.0 (maximally negative) to +1.0 (maximally positive). Following convention [4], a compound score ≥ 0.05 was classified as positive, ≤ −0.05 as negative, and the remainder as neutral. The average compound score and distribution of classifications were computed for each of the ten characters.</p>
+      
+      <div class="eq-block">
+        Compound = (Σ valence<sub>i</sub>) / √(Σ valence<sub>i</sub>² + α)&nbsp;&nbsp; α = 15
+      </div>
+
+      <!-- Methodology Flow -->
+      <div class="method-flow">
+        <div class="method-step"><span class="step-num">Step 1</span>API Data Collection</div>
+        <div class="method-arrow">→</div>
+        <div class="method-step"><span class="step-num">Step 2</span>Text Preprocessing</div>
+        <div class="method-arrow">→</div>
+        <div class="method-step"><span class="step-num">Step 3</span>Character Matching</div>
+        <div class="method-arrow">→</div>
+        <div class="method-step"><span class="step-num">Step 4</span>VADER Scoring</div>
+        <div class="method-arrow">→</div>
+        <div class="method-step"><span class="step-num">Step 5</span>Analysis &amp; Reporting</div>
+      </div>
+      <p style="text-align:center; font-style:italic; font-size:8.5pt; color:var(--muted);">Fig. 1. Research methodology pipeline.</p>
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div class="col">
+      <h2 class="section-head">IV. Results</h2>
+
+      <h3 class="subsection-head">A. Aggregate Sentiment Distribution</h3>
+
+      <div class="metric-row">
+        <div class="metric-card"><span class="metric-val">3,309</span><span class="metric-lbl">Total Comments</span></div>
+        <div class="metric-card"><span class="metric-val">10</span><span class="metric-lbl">Characters</span></div>
+        <div class="metric-card"><span class="metric-val">47.3%</span><span class="metric-lbl">Most Neutral Kakashi</span></div>
+        <div class="metric-card"><span class="metric-val">46</span><span class="metric-lbl">Videos Sampled</span></div>
+      </div>
+
+
+      <h3 class="subsection-head">B. Top 10 Most Discussed Characters</h3>
+      <p>Table I presents the mention frequency for the ten most discussed characters. <em>Naruto Uzumaki</em> dominates with 590 mentions, nearly 75% more than the second-ranked character, <em>Sasuke Uchiha</em> (338). The top five characters all originate primarily from the original series and <em>Shippuden</em>.</p>
+
+      <div class="table-caption">TABLE I. Top 10 Most Discussed Characters by Mention Frequency</div>
+      <table class="ieee-table">
+        <thead>
+          <tr><th>Rank</th><th>Character</th><th>Mentions</th><th>Series Origin</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>Naruto Uzumaki</td><td>590</td><td>Naruto / Shippuden</td></tr>
+          <tr><td>2</td><td>Sasuke Uchiha</td><td>338</td><td>Naruto / Shippuden</td></tr>
+          <tr><td>3</td><td>Boruto Uzumaki</td><td>263</td><td>Boruto</td></tr>
+          <tr><td>4</td><td>Itachi Uchiha</td><td>237</td><td>Naruto / Shippuden</td></tr>
+          <tr><td>5</td><td>Kakashi Hatake</td><td>167</td><td>Naruto / Shippuden</td></tr>
+          <tr><td>6</td><td>Madara Uchiha</td><td>117</td><td>Shippuden</td></tr>
+          <tr><td>7</td><td>Kawaki</td><td>92</td><td>Boruto</td></tr>
+          <tr><td>8</td><td>Sakura Haruno</td><td>79</td><td>Naruto / Shippuden</td></tr>
+          <tr><td>9</td><td>Obito Uchiha</td><td>79</td><td>Shippuden</td></tr>
+          <tr><td>10</td><td>Pain (Nagato)</td><td>61</td><td>Shippuden</td></tr>
+        </tbody>
+      </table>
+
+      <h3 class="subsection-head">C. Sentiment Distribution</h3>
+      <p>Table II presents the complete sentiment analysis results. Eight of the ten characters received an overall positive classification. <em>Madara</em> and <em>Obito</em> were classified as Neutral/Mixed, and <em>Pain</em> was the only character with an overall negative classification (avg. −0.176), with 60.7% of associated comments categorized as negative.</p>
+
+      <div class="table-caption">TABLE II. Sentiment Analysis Results for Top 10 Characters</div>
+      <table class="ieee-table">
+        <thead>
+          <tr><th>Character</th><th>Pos%</th><th>Neg%</th><th>Neu%</th><th>Avg.</th><th>Overall</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Naruto</td>
+            <td><div class="bar-cell"><div class="mini-bar bar-pos" style="width:45px"></div><span class="bar-val">45.3%</span></div></td>
+            <td><div class="bar-cell"><div class="mini-bar bar-neg" style="width:28px"></div><span class="bar-val">28.1%</span></div></td>
+            <td><div class="bar-cell"><div class="mini-bar bar-neu" style="width:27px"></div><span class="bar-val">26.6%</span></div></td>
+            <td>+0.121</td>
+            <td><span class="sentiment-pill pill-positive">Positive</span></td>
+          </tr>
+          <tr>
+            <td>Sasuke</td>
+            <td><div class="bar-cell"><div class="mini-bar bar-pos" style="width:45px"></div><span class="bar-val">45.3%</span></div></td>
+            <td><div class="bar-cell"><div class="mini-bar bar-neg" style="width:32px"></div><span class="bar-val">32.2%</span></div></td>
+            <td><div class="bar-cell"><div class="mini-bar bar-neu" style="width:22px"></div><span class="bar-val">22.5%</span></div></td>
+            <td>+0.079</td>
+            <td><span class="sentiment-pill pill-positive">Positive</span></td>
+          </tr>
+          <tr>
+            <td>Boruto</td>
+            <td><div class="bar-cell"><div class="mini-bar bar-pos" style="width:42px"></div><span class="bar-val">41.8%</span></div></td>
+            <td><div class="bar-cell"><div class="mini-bar bar-neg" style="width:26px"></div><span class="bar-val">26.2%</span></div></td>
+            <td><div class="bar-cell"><div class="mini-bar bar-neu" style="width:32px"></div><span class="bar-val">32.0%</span></div></td>
+            <td>+0.105</td>
+            <td><span class="sentiment-pill pill-positive">Positive</span></td>
+          </tr>
+          <tr>
+            <td>Itachi</td>
+            <td><div class="bar-cell"><div class="mini-bar bar-pos" style="width:46px"></div><span class="bar-val">45.6%</span></div></td>
+            <td><div class="bar-cell"><div class="mini-bar bar-neg" style="width:25px"></div><span class="bar-val">24.9%</span></div></td>
+            <td><div class="bar-cell"><div class="mini-bar bar-neu" style="width:29px"></div><span class="bar-val">29.5%</span></div></td>
+            <td>+0.115</td>
+            <td><span class="sentiment-pill pill-positive">Positive</span></td>
+          </tr>
+          <tr>
+            <td>Kakashi</td>
+            <td><div class="bar-cell"><div class="mini-bar bar-pos" style="width:30px"></div><span class="bar-val">30.5%</span></div></td>
+            <td><div class="bar-cell"><div class="mini-bar bar-neg" style="width:22px"></div><span class="bar-val">22.2%</span></div></td>
+            <td><div class="bar-cell"><div class="mini-bar bar-neu" style="width:47px"></div><span class="bar-val">47.3%</span></div></td>
+            <td>+0.066</td>
+            <td><span class="sentiment-pill pill-positive">Positive</span></td>
+          </tr>
+          <tr>
+            <td>Madara</td>
+            <td><div class="bar-cell"><div class="mini-bar bar-pos" style="width:38px"></div><span class="bar-val">38.5%</span></div></td>
+            <td><div class="bar-cell"><div class="mini-bar bar-neg" style="width:32px"></div><span class="bar-val">31.6%</span></div></td>
+            <td><div class="bar-cell"><div class="mini-bar bar-neu" style="width:30px"></div><span class="bar-val">29.9%</span></div></td>
+            <td>+0.023</td>
+            <td><span class="sentiment-pill pill-mixed">Mixed</span></td>
+          </tr>
+          <tr>
+            <td>Kawaki</td>
+            <td><div class="bar-cell"><div class="mini-bar bar-pos" style="width:38px"></div><span class="bar-val">38.0%</span></div></td>
+            <td><div class="bar-cell"><div class="mini-bar bar-neg" style="width:27px"></div><span class="bar-val">27.2%</span></div></td>
+            <td><div class="bar-cell"><div class="mini-bar bar-neu" style="width:35px"></div><span class="bar-val">34.8%</span></div></td>
+            <td>+0.054</td>
+            <td><span class="sentiment-pill pill-positive">Positive</span></td>
+          </tr>
+          <tr>
+            <td>Sakura</td>
+            <td><div class="bar-cell"><div class="mini-bar bar-pos" style="width:39px"></div><span class="bar-val">39.2%</span></div></td>
+            <td><div class="bar-cell"><div class="mini-bar bar-neg" style="width:32px"></div><span class="bar-val">31.6%</span></div></td>
+            <td><div class="bar-cell"><div class="mini-bar bar-neu" style="width:29px"></div><span class="bar-val">29.2%</span></div></td>
+            <td>+0.060</td>
+            <td><span class="sentiment-pill pill-positive">Positive</span></td>
+          </tr>
+          <tr>
+            <td>Obito</td>
+            <td><div class="bar-cell"><div class="mini-bar bar-pos" style="width:42px"></div><span class="bar-val">41.8%</span></div></td>
+            <td><div class="bar-cell"><div class="mini-bar bar-neg" style="width:38px"></div><span class="bar-val">38.0%</span></div></td>
+            <td><div class="bar-cell"><div class="mini-bar bar-neu" style="width:20px"></div><span class="bar-val">20.2%</span></div></td>
+            <td>−0.004</td>
+            <td><span class="sentiment-pill pill-mixed">Mixed</span></td>
+          </tr>
+          <tr>
+            <td>Pain</td>
+            <td><div class="bar-cell"><div class="mini-bar bar-pos" style="width:28px"></div><span class="bar-val">27.9%</span></div></td>
+            <td><div class="bar-cell"><div class="mini-bar bar-neg" style="width:61px"></div><span class="bar-val">60.7%</span></div></td>
+            <td><div class="bar-cell"><div class="mini-bar bar-neu" style="width:11px"></div><span class="bar-val">11.4%</span></div></td>
+            <td>−0.176</td>
+            <td><span class="sentiment-pill pill-negative">Negative</span></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <br>
+
+      <div style="display: flex; flex-direction: column; align-items: center; text-align: center; font-family: sans-serif; gap: 12px;">
+  <!-- Centered GIF -->
+  <img src="https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExdHJlenN0a3Q5anV5YTlqeGx5NzZnaXd2ODU0cW40cGQ1dDZyNTJubSZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/8i2RqebJC33Wq09R27/giphy.gif" width="400" alt="Naruto Sasuke Boruto">
+  
+  <!-- Text Under GIF -->
+  <p style="margin: 0; max-width: 500px; color: #555; line-height: 1.5; font-size: 14px;">
+    <strong>Fun Fact:</strong> These top three characters alone account for 1,191 mentions, which is more than half (approx. 59%) of the total volume generated by the entire top ten list combined.
+  </p>
+</div>
+
+    </div>
+  </div><!-- end two-col-body -->
+
+  <!-- CHARACTER GALLERY: full width -->
+  <div class="full-width">
+    <div class="full-width-inner">
+      <h2 class="section-head" style="margin-top:0;">Character Gallery — Top 10 Most Discussed <span style="font-size: 11px;">(All images are taken from Narutopedia)</span>
+ </h2>
+      <div class="char-gallery">
+
+        <!-- Naruto -->
+        <div class="char-card">
+          <div class="char-img-wrap avatar-naruto">
+            <span class="char-rank">1</span>
+            <img src="https://upload.wikimedia.org/wikipedia/en/9/9a/NarutoUzumaki.png" alt="Naruto Uzumaki" onerror="this.style.display='none';this.parentElement.querySelector('.avatar-icon').style.display='flex'">
+            <span class="avatar-icon" style="display:none">🍥</span>
+          </div>
+          <div class="char-info">
+            <div class="char-name">Naruto Uzumaki</div>
+            <div class="char-series">Naruto / Shippuden</div>
+            <div class="char-mentions">590 mentions</div>
+            <span class="sentiment-pill pill-positive">Positive +0.121</span>
+          </div>
+        </div>
+
+        <!-- Sasuke -->
+        <div class="char-card">
+          <div class="char-img-wrap avatar-sasuke">
+            <span class="char-rank">2</span>
+            <img src="https://upload.wikimedia.org/wikipedia/en/4/42/SasukeKishimoto.jpg" alt="Sasuke Uchiha" onerror="this.style.display='none'">
+            <span class="avatar-icon" style="display:none">⚡</span>
+          </div>
+          <div class="char-info">
+            <div class="char-name">Sasuke Uchiha</div>
+            <div class="char-series">Naruto / Shippuden</div>
+            <div class="char-mentions">338 mentions</div>
+            <span class="sentiment-pill pill-positive">Positive +0.079</span>
+          </div>
+        </div>
+
+        <!-- Boruto -->
+        <div class="char-card">
+          <div class="char-img-wrap avatar-boruto">
+            <span class="char-rank">3</span>
+            <img src="https://static.wikia.nocookie.net/naruto/images/0/0e/Boruto_TBV_Vol_1.png/revision/latest/scale-to-width-down/300?cb=20240119123121" alt="Boruto Uzumaki" onerror="this.style.display='none'">
+            <span class="avatar-icon" style="display:none">💫</span>
+          </div>
+          <div class="char-info">
+            <div class="char-name">Boruto Uzumaki</div>
+            <div class="char-series">Boruto</div>
+            <div class="char-mentions">263 mentions</div>
+            <span class="sentiment-pill pill-positive">Positive +0.105</span>
+          </div>
+        </div>
+
+        <!-- Itachi -->
+        <div class="char-card">
+          <div class="char-img-wrap avatar-itachi">
+            <span class="char-rank">4</span>
+            <img src="https://static.wikia.nocookie.net/naruto/images/b/bb/Itachi.png/revision/latest/scale-to-width-down/300?cb=20260212213556" alt="Itachi Uchiha" onerror="this.style.display='none'">
+            <span class="avatar-icon" style="display:none">🌙</span>
+          </div>
+          <div class="char-info">
+            <div class="char-name">Itachi Uchiha</div>
+            <div class="char-series">Naruto / Shippuden</div>
+            <div class="char-mentions">237 mentions</div>
+            <span class="sentiment-pill pill-positive">Positive +0.115</span>
+          </div>
+        </div>
+
+        <!-- Kakashi -->
+        <div class="char-card">
+          <div class="char-img-wrap avatar-kakashi">
+            <span class="char-rank">5</span>
+            <img src="https://static.wikia.nocookie.net/naruto/images/b/b6/Hokage_Kakashi.png/revision/latest/scale-to-width-down/1000?cb=20170617162005" alt="Kakashi Hatake" onerror="this.style.display='none'">
+            <span class="avatar-icon" style="display:none">📖</span>
+          </div>
+          <div class="char-info">
+            <div class="char-name">Kakashi Hatake</div>
+            <div class="char-series">Naruto / Shippuden</div>
+            <div class="char-mentions">167 mentions</div>
+            <span class="sentiment-pill pill-positive">Positive +0.066</span>
+          </div>
+        </div>
+
+        <!-- Madara -->
+        <div class="char-card">
+          <div class="char-img-wrap avatar-madara">
+            <span class="char-rank">6</span>
+            <img src="https://static.wikia.nocookie.net/naruto/images/4/43/Madara_Reanimated.png/revision/latest/scale-to-width-down/1000?cb=20140425095437" alt="Madara Uchiha" onerror="this.style.display='none'">
+            <span class="avatar-icon" style="display:none">🔥</span>
+          </div>
+          <div class="char-info">
+            <div class="char-name">Madara Uchiha</div>
+            <div class="char-series">Shippuden</div>
+            <div class="char-mentions">117 mentions</div>
+            <span class="sentiment-pill pill-mixed">Mixed +0.023</span>
+          </div>
+        </div>
+
+        <!-- Kawaki -->
+        <div class="char-card">
+          <div class="char-img-wrap avatar-kawaki">
+            <span class="char-rank">7</span>
+            <img src="https://static.wikia.nocookie.net/naruto/images/3/33/Kawaki_Part_II.png/revision/latest/scale-to-width-down/300?cb=20231124072642" alt="Kawaki" onerror="this.style.display='none'">
+            <span class="avatar-icon" style="display:none">⚙️</span>
+          </div>
+          <div class="char-info">
+            <div class="char-name">Kawaki</div>
+            <div class="char-series">Boruto</div>
+            <div class="char-mentions">92 mentions</div>
+            <span class="sentiment-pill pill-positive">Positive +0.054</span>
+          </div>
+        </div>
+
+        <!-- Sakura -->
+        <div class="char-card">
+          <div class="char-img-wrap avatar-sakura">
+            <span class="char-rank">8</span>
+            <img src="https://static.wikia.nocookie.net/naruto/images/a/a5/Sakura_Part_III.png/revision/latest/scale-to-width-down/1000?cb=20170726100410" alt="Sakura Haruno" onerror="this.style.display='none'">
+            <span class="avatar-icon" style="display:none">🌸</span>
+          </div>
+          <div class="char-info">
+            <div class="char-name">Sakura Haruno</div>
+            <div class="char-series">Naruto / Shippuden</div>
+            <div class="char-mentions">79 mentions</div>
+            <span class="sentiment-pill pill-positive">Positive +0.060</span>
+          </div>
+        </div>
+
+        <!-- Obito -->
+        <div class="char-card">
+          <div class="char-img-wrap avatar-obito">
+            <span class="char-rank">9</span>
+            <img src="https://static.wikia.nocookie.net/naruto/images/4/4a/Obito_Uchiha.png/revision/latest/scale-to-width-down/300?cb=20220223045744" alt="Obito Uchiha" onerror="this.style.display='none'">
+            <span class="avatar-icon" style="display:none">👁️</span>
+          </div>
+          <div class="char-info">
+            <div class="char-name">Obito Uchiha</div>
+            <div class="char-series">Shippuden</div>
+            <div class="char-mentions">79 mentions</div>
+            <span class="sentiment-pill pill-mixed">Mixed −0.004</span>
+          </div>
+        </div>
+
+        <!-- Pain -->
+        <div class="char-card">
+          <div class="char-img-wrap avatar-pain">
+            <span class="char-rank">10</span>
+            <img src="https://static.wikia.nocookie.net/naruto/images/e/e3/Nagato_Statue.png/revision/latest/scale-to-width-down/1000?cb=20140131144423" alt="Pain" onerror="this.style.display='none'">
+            <span class="avatar-icon" style="display:none">😤</span>
+          </div>
+          <div class="char-info">
+            <div class="char-name">Pain (Nagato)</div>
+            <div class="char-series">Shippuden</div>
+            <div class="char-mentions">61 mentions</div>
+            <span class="sentiment-pill pill-negative">Negative −0.176</span>
+          </div>
+        </div>
+
+      </div>
+      <p style="text-align:center; font-style:italic; font-size:8.5pt; color:var(--muted);">Fig. 2. Top 10 most discussed <em>Naruto</em> franchise characters ranked by mention frequency, with sentiment classification.</p>
+    </div>
+  </div>
+
+  <!-- SENTIMENT BAR CHART: full width -->
+  <div class="full-width" style="padding-bottom: 0;">
+    <div class="full-width-inner">
+      <h2 class="section-head" style="margin-top:0;">Sentiment Distribution per Character</h2>
+      <div class="sentiment-chart">
+        <div class="senti-row"><div class="senti-name">Naruto</div><div class="senti-bars" style="width:100%"><div class="senti-pos" style="width:45.3%"></div><div class="senti-neu" style="width:26.6%"></div><div class="senti-neg" style="width:28.1%"></div></div></div>
+        <div class="senti-row"><div class="senti-name">Itachi</div><div class="senti-bars" style="width:100%"><div class="senti-pos" style="width:45.6%"></div><div class="senti-neu" style="width:29.5%"></div><div class="senti-neg" style="width:24.9%"></div></div></div>
+        <div class="senti-row"><div class="senti-name">Sasuke</div><div class="senti-bars" style="width:100%"><div class="senti-pos" style="width:45.3%"></div><div class="senti-neu" style="width:22.5%"></div><div class="senti-neg" style="width:32.2%"></div></div></div>
+        <div class="senti-row"><div class="senti-name">Boruto</div><div class="senti-bars" style="width:100%"><div class="senti-pos" style="width:41.8%"></div><div class="senti-neu" style="width:32.0%"></div><div class="senti-neg" style="width:26.2%"></div></div></div>
+        <div class="senti-row"><div class="senti-name">Obito</div><div class="senti-bars" style="width:100%"><div class="senti-pos" style="width:41.8%"></div><div class="senti-neu" style="width:20.2%"></div><div class="senti-neg" style="width:38.0%"></div></div></div>
+        <div class="senti-row"><div class="senti-name">Sakura</div><div class="senti-bars" style="width:100%"><div class="senti-pos" style="width:39.2%"></div><div class="senti-neu" style="width:29.2%"></div><div class="senti-neg" style="width:31.6%"></div></div></div>
+        <div class="senti-row"><div class="senti-name">Madara</div><div class="senti-bars" style="width:100%"><div class="senti-pos" style="width:38.5%"></div><div class="senti-neu" style="width:29.9%"></div><div class="senti-neg" style="width:31.6%"></div></div></div>
+        <div class="senti-row"><div class="senti-name">Kawaki</div><div class="senti-bars" style="width:100%"><div class="senti-pos" style="width:38.0%"></div><div class="senti-neu" style="width:34.8%"></div><div class="senti-neg" style="width:27.2%"></div></div></div>
+        <div class="senti-row"><div class="senti-name">Kakashi</div><div class="senti-bars" style="width:100%"><div class="senti-pos" style="width:30.5%"></div><div class="senti-neu" style="width:47.3%"></div><div class="senti-neg" style="width:22.2%"></div></div></div>
+        <div class="senti-row"><div class="senti-name">Pain</div><div class="senti-bars" style="width:100%"><div class="senti-pos" style="width:27.9%"></div><div class="senti-neu" style="width:11.4%"></div><div class="senti-neg" style="width:60.7%"></div></div></div>
+        <div class="senti-legend">
+          <span><span class="legend-dot" style="background:var(--positive)"></span>Positive</span>
+          <span><span class="legend-dot" style="background:var(--neutral)"></span>Neutral</span>
+          <span><span class="legend-dot" style="background:var(--negative)"></span>Negative</span>
+        </div>
+      </div>
+      <p style="text-align:center; font-style:italic; font-size:8.5pt; color:var(--muted); padding-bottom: 16px;">Fig. 3. Stacked bar chart of positive, neutral, and negative sentiment proportions for each character (sorted by positive %).</p>
+    </div>
+  </div>
+
+  <!-- DISCUSSION + CONCLUSION: two-col -->
+  <div class="two-col-body" style="border-top: 1px solid var(--border);">
+    <div class="col">
+      <h2 class="section-head">V. Discussion</h2>
+      <p><em>Naruto Uzumaki</em>'s position as both the most mentioned and highest-scoring character (avg. +0.121) reflects the franchise's foundational audience attachment to the protagonist. His narrative arc, from social outcast to Hokage, has generated sustained emotional investment among fans, a finding consistent with research linking protagonist identification with positive online engagement [5].</p>
+
+      <p><em>Itachi Uchiha</em> achieved the second-highest average sentiment score (+0.115) despite ranking fourth in total mentions, suggesting that while his discussion volume is somewhat lower, the quality of emotional engagement is high. This aligns with the character's cultural status as a fan-favorite "tragic hero" whose backstory resonated deeply with the audience.</p>
+
+      <div class="finding-panel">
+        <p><strong>Key Finding 1:</strong> Legacy characters from <em>Naruto</em> and <em>Shippuden</em> (Naruto, Sasuke, Itachi, Kakashi) dominate both mention frequency and positive sentiment, suggesting that nostalgia and long-form narrative investment are primary drivers of fan engagement.</p>
+      </div>
+
+      <p>The near-tie between <em>Sakura</em> and <em>Obito</em> in mention count (both 79) but divergent sentiment scores (+0.060 vs. −0.004) is noteworthy. Obito's classification as Neutral/Mixed may reflect audience ambivalence toward his role as both a villain and a sympathetic character, whereas Sakura's discussions, though proportionally including notable negative commentary (31.6%), trend slightly positive overall.</p>
+
+      <div class="finding-panel">
+        <p><strong>Key Finding 2:</strong> <em>Pain</em> is the only character with an overall negative sentiment (avg. −0.176), with 60.7% of comments classified as negative. This may reflect the nature of fan discussions about villains particularly those whose actions, while narratively impactful, are evaluated unfavorably in isolation from story context by VADER.</p>
+      </div>
+
+      <p><em>Kakashi Hatake</em>'s unusually high neutral proportion (47.3%) may indicate that discussions about this character tend toward analytical or informational commentary rather than strong emotional expression consistent with the character's calm, mentor-like persona.</p>
+
+      <p>The two Boruto-era characters in the top ten, <em>Boruto Uzumaki</em> (rank 3) and <em>Kawaki</em> (rank 7) both received positive sentiment classifications. However, their mention counts are substantially lower than the legacy characters, indicating that franchise longevity and emotional legacy from older series continue to shape YouTube discourse patterns.</p>
+    </div>
+
+    <div class="col">
+      <h2 class="section-head">VI. Conclusion</h2>
+      <p>This study presented a YouTube comment-based sentiment analysis of the ten most discussed characters in the <em>Naruto</em> franchise. By collecting 3,309 comments from 46 videos via the YouTube Data API v3 and applying the VADER sentiment analysis tool, the study achieved its stated objectives:</p>
+      <p>The ten most discussed characters were identified, with <em>Naruto Uzumaki</em> at the top (590 mentions). Sentiment was classified for each character, revealing that eight of ten characters received an overall positive classification. Comparative analysis demonstrated that legacy characters from the original series and <em>Shippuden</em> dominate both discussion volume and sentiment scores.</p>
+      <p>The findings suggest that YouTube comment mining is a viable and informative methodology for studying audience perception of fictional characters in long-running media franchises. The persistence of legacy characters in fan discourse underscores the role of nostalgia, character depth, and narrative arc quality in sustaining audience engagement.</p>
+
+      <h2 class="section-head">VII. Limitations</h2>
+      <p>Several constraints limit the generalizability of the present findings. The analysis is confined to YouTube and does not incorporate data from Reddit, Twitter/X, or other platforms. VADER, while robust for general-purpose sentiment detection, may misclassify comments that employ sarcasm, anime-specific slang, or multi-lingual expressions common in international fan communities. Character name-matching may undercount references via indirect means (plot role descriptions, character archetypes). The sample size of 46 videos, while sufficient for a pilot study, may not be representative of the full YouTube discourse around the franchise.</p>
+
+      <h2 class="section-head">VIII. Future Work</h2>
+      <p>Future research should expand data collection to multiple social media platforms to enable cross-platform comparison. The deployment of transformer-based models such as BERT or RoBERTa would likely improve sentiment classification accuracy on domain-specific text. Temporal analysis, tracking sentiment evolution across broadcast periods or major story arcs would add a longitudinal dimension. Additionally, separating the analysis by series (<em>Naruto</em>, <em>Shippuden</em>, <em>Boruto</em>) would allow for arc-specific comparisons of character reception.</p>
+
+      <!-- References -->
+      <h2 class="section-head">References</h2>
+      <div class="references">
+        <ol>
+          <li>M. Kishimoto, <em>Naruto</em>, Shueisha, 1999–2014.</li>
+          <li>B. Liu, <em>Sentiment Analysis and Opinion Mining</em>, Morgan &amp; Claypool Publishers, 2012.</li>
+          <li>C. Hutto and E. Gilbert, "VADER: A Parsimonious Rule-Based Model for Sentiment Analysis of Social Media Text," in <em>Proc. ICWSM</em>, 2014.</li>
+          <li>C. Hutto, "VADER Sentiment Analysis," GitHub, 2014. [Online]. Available: https://github.com/cjhutto/vaderSentiment</li>
+          <li>M. D. Slater and D. Rouner, "Entertainment-Education and Elaboration Likelihood," <em>Communication Theory</em>, vol. 12, no. 2, pp. 173–191, 2002.</li>
+          <li>YouTube, "YouTube Data API v3 Documentation," Google, 2023. [Online]. Available: https://developers.google.com/youtube/v3</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+
+  <!-- FOOTER -->
+  <footer class="page-footer">
+    <strong>Md. Shimul Ahmed Bappi</strong> &nbsp;|&nbsp; Undergraduate Aspirant Researcher &nbsp;|&nbsp; Department of Statistics and Data Science, Jahangirnagar University &nbsp;|&nbsp; shimulbappi.sds49@gmail.com<br>
+    <span style="margin-top:4px; display:inline-block; opacity:0.6;">© 2025 — Prepared in IEEE Conference Style &nbsp;·&nbsp; All data collected via YouTube Data API v3 &nbsp;·&nbsp; VADER sentiment analysis</span>
+  </footer>
+
+</div>
+
+<script>
+  // Try to load the Naruto characters group image with multiple fallback sources
+  const coverImg = document.getElementById('cover-chars-img');
+  const sources = [
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/Naruto_shippuden_logo.svg/300px-Naruto_shippuden_logo.svg.png',
+    'https://static.wikia.nocookie.net/naruto/images/9/9a/Narutomanga.png/revision/latest/scale-to-width-down/300?cb=20130922061234',
+  ];
+  let srcIndex = 0;
+
+  // Use the provided image directly as a data URI approximation via a known group art
+  // We'll use a well-known publicly available Naruto all characters image
+  coverImg.src = 'https://i.pinimg.com/originals/d3/57/4f/d3574f0043a0a36dc1aad2e03a7f0c55.png';
+
+  coverImg.onerror = function() {
+    if (srcIndex < sources.length) {
+      coverImg.src = sources[srcIndex++];
+    } else {
+      // Final fallback: show a styled text badge
+      coverImg.parentElement.innerHTML = `
+        <div style="
+          width:260px;
+          height:200px;
+          display:flex;
+          flex-direction:column;
+          align-items:center;
+          justify-content:center;
+          background:rgba(255,255,255,0.05);
+          border:1px solid rgba(255,255,255,0.12);
+          border-radius:8px;
+          padding:16px;
+          text-align:center;
+        ">
+          <div style="font-size:48px; margin-bottom:8px;">🍥⚡🌙</div>
+          <div style="font-family:'Source Sans 3',sans-serif; font-size:9pt; color:rgba(255,255,255,0.7); line-height:1.4;">
+            <em>Naruto Franchise</em><br>
+            <span style="color:#F48C06; font-size:8pt;">10 Most Discussed Characters</span>
+          </div>
+        </div>
+      `;
+    }
+  };
+</script>
+</body>
+</html>
