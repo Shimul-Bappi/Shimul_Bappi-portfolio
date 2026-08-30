@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>The Influence of Textual Sentiment in Video Titles and Descriptions on Public Comment Polarity and View Counts</title>
+<meta name="description" content="Cross-niche statistical analysis of title/description sentiment, comment emotion, and view-count virality across 70 YouTube videos in gaming, news/politics, and entertainment.">
+<style>
+  :root{
+    --bg:#0a1628;
+    --bg-alt:#0d1e33;
+    --card:#0f2340;
+    --card-2:#112846;
+    --border:#1c3a5e;
+    --border-soft:#16304f;
+    --text:#e7edf6;
+    --text-dim:#9fb0c7;
+    --text-faint:#6d829f;
+    --cyan:#3fd8c9;
+    --cyan-soft:#1f7a86;
+    --cyan-glow:rgba(63,216,201,0.14);
+    --amber:#e0a458;
+    --rose:#e07a7a;
+    --serif:Georgia,'Cambria','Times New Roman',Times,serif;
+    --mono:'SFMono-Regular',Consolas,'Liberation Mono',Menlo,monospace;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:
+      radial-gradient(1100px 620px at 12% -8%, rgba(63,216,201,0.07), transparent 60%),
+      radial-gradient(900px 500px at 100% 0%, rgba(63,216,201,0.05), transparent 55%),
+      var(--bg);
+    color:var(--text);
+    font-family:var(--serif);
+    line-height:1.68;
+    -webkit-font-smoothing:antialiased;
+  }
+  a{color:var(--cyan);text-decoration:none;}
+  a:hover{text-decoration:underline;}
+  .wrap{max-width:960px;margin:0 auto;padding:0 24px;}
+
+  /* ===== Header ===== */
+  header.hero{
+    border-bottom:1px solid var(--border);
+    padding:64px 0 40px;
+    background:linear-gradient(180deg, rgba(63,216,201,0.05), transparent 70%);
+  }
+  .eyebrow{
+    font-family:var(--mono);
+    font-size:12.5px;
+    letter-spacing:0.14em;
+    text-transform:uppercase;
+    color:var(--cyan);
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px 18px;
+    margin-bottom:22px;
+  }
+  .eyebrow span{position:relative;padding-left:16px;}
+  .eyebrow span::before{content:"";position:absolute;left:0;top:50%;transform:translateY(-50%);width:6px;height:6px;background:var(--cyan);border-radius:1px;}
+  .eyebrow span:first-child{padding-left:0;}
+  .eyebrow span:first-child::before{display:none;}
+
+  h1.title{
+    font-size:clamp(28px,4.4vw,42px);
+    line-height:1.18;
+    margin:0 0 10px;
+    font-weight:700;
+    color:#fff;
+    letter-spacing:-0.01em;
+  }
+  .subtitle{
+    font-size:16.5px;
+    color:var(--text-dim);
+    font-style:italic;
+    max-width:760px;
+    margin:0 0 26px;
+  }
+  .meta-line{
+    font-family:var(--mono);
+    font-size:12.5px;
+    color:var(--text-faint);
+    border-top:1px solid var(--border-soft);
+    padding-top:18px;
+    display:flex;
+    flex-wrap:wrap;
+    gap:6px 10px;
+  }
+  .meta-line strong{color:var(--text-dim);font-weight:600;}
+
+  .author-block{
+    margin-top:26px;
+    display:flex;
+    flex-wrap:wrap;
+    align-items:baseline;
+    gap:4px 14px;
+    font-size:15px;
+  }
+  .author-block .name{color:#fff;font-weight:700;}
+  .author-block .affil{color:var(--text-dim);font-size:13.5px;}
+  .author-links{
+    margin-top:10px;
+    display:flex;
+    gap:16px;
+    font-family:var(--mono);
+    font-size:12.5px;
+  }
+
+  /* ===== Stat cards ===== */
+  .stats{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:1px;
+    background:var(--border);
+    border:1px solid var(--border);
+    margin-top:36px;
+  }
+  .stat{
+    background:var(--card);
+    padding:22px 18px;
+    text-align:left;
+  }
+  .stat .num{
+    font-family:var(--mono);
+    font-size:clamp(22px,3vw,30px);
+    color:var(--cyan);
+    font-weight:600;
+    display:block;
+    line-height:1.1;
+  }
+  .stat .label{
+    margin-top:8px;
+    font-size:12px;
+    color:var(--text-dim);
+    letter-spacing:0.03em;
+  }
+
+  /* ===== Body layout ===== */
+  main{padding:52px 0 20px;}
+  .abstract{
+    background:var(--card);
+    border:1px solid var(--border);
+    border-left:3px solid var(--cyan-soft);
+    padding:28px 30px;
+    margin-bottom:44px;
+  }
+  .abstract h2{
+    font-family:var(--mono);
+    font-size:12px;
+    letter-spacing:0.16em;
+    text-transform:uppercase;
+    color:var(--cyan);
+    margin:0 0 14px;
+  }
+  .abstract p{margin:0 0 12px;color:var(--text-dim);font-size:15px;}
+  .abstract p:last-child{margin-bottom:0;}
+  .keywords{
+    margin-top:16px;
+    padding-top:16px;
+    border-top:1px solid var(--border-soft);
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--text-faint);
+  }
+  .keywords b{color:var(--text-dim);}
+
+  nav.toc{
+    background:var(--bg-alt);
+    border:1px solid var(--border);
+    padding:22px 28px;
+    margin-bottom:56px;
+  }
+  nav.toc h2{
+    font-family:var(--mono);
+    font-size:12px;
+    letter-spacing:0.16em;
+    text-transform:uppercase;
+    color:var(--cyan);
+    margin:0 0 14px;
+  }
+  nav.toc ol{
+    margin:0;
+    padding-left:0;
+    list-style:none;
+    columns:2;
+    column-gap:32px;
+  }
+  nav.toc li{
+    font-size:14px;
+    margin-bottom:9px;
+    break-inside:avoid;
+  }
+  nav.toc li a{color:var(--text-dim);}
+  nav.toc li a:hover{color:var(--cyan);}
+  nav.toc .roman{color:var(--cyan);font-family:var(--mono);margin-right:8px;}
+
+  article section{margin-bottom:58px;}
+  h2.sec-title{
+    font-size:22px;
+    color:#fff;
+    margin:0 0 22px;
+    display:flex;
+    align-items:baseline;
+    gap:12px;
+    border-bottom:1px solid var(--border);
+    padding-bottom:14px;
+  }
+  h2.sec-title .roman{
+    font-family:var(--mono);
+    color:var(--cyan);
+    font-size:15px;
+  }
+  h3.sub-title{
+    font-size:16.5px;
+    color:var(--cyan);
+    margin:32px 0 12px;
+    font-weight:600;
+  }
+  h3.sub-title .letter{font-family:var(--mono);margin-right:8px;color:var(--text-faint);}
+
+  p{color:#dbe4f0;font-size:16px;text-align:justify;text-justify:inter-word;}
+  article p{margin:0 0 16px;}
+  .subtitle{text-align:justify;text-justify:inter-word;}
+  .abstract p{text-align:justify;text-justify:inter-word;}
+  figcaption{text-align:justify;text-justify:inter-word;}
+  .callout{text-align:justify;text-justify:inter-word;}
+  .bio p{text-align:justify;text-justify:inter-word;}
+
+  .callout{
+    background:var(--card-2);
+    border:1px solid var(--border);
+    padding:18px 22px;
+    margin:18px 0 20px;
+    font-size:14.5px;
+    color:var(--text-dim);
+  }
+  .callout b{color:var(--cyan);}
+
+  /* ===== Result stat trio ===== */
+  .trio{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:14px;
+    margin:20px 0 22px;
+  }
+  .trio .card{
+    background:var(--card);
+    border:1px solid var(--border);
+    padding:18px 16px;
+  }
+  .trio .card .n{font-family:var(--mono);color:var(--cyan);font-size:24px;font-weight:600;}
+  .trio .card .d{font-size:12.5px;color:var(--text-dim);margin-top:6px;}
+
+  /* ===== Tables ===== */
+  .table-wrap{overflow-x:auto;margin:18px 0 8px;}
+  table{
+    width:100%;
+    border-collapse:collapse;
+    font-family:var(--serif);
+    font-size:14px;
+    background:var(--bg-alt);
+  }
+  table caption{
+    caption-side:top;
+    text-align:left;
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--text-faint);
+    padding-bottom:8px;
+    letter-spacing:0.02em;
+  }
+  thead th{
+    border-top:1.5px solid var(--text-dim);
+    border-bottom:1px solid var(--text-dim);
+    padding:8px 10px;
+    text-align:right;
+    font-weight:700;
+    color:#fff;
+    font-size:13px;
+  }
+  thead th:first-child{text-align:left;}
+  tbody td{
+    padding:7px 10px;
+    text-align:right;
+    border-bottom:1px solid var(--border-soft);
+    color:var(--text-dim);
+    font-variant-numeric:tabular-nums;
+  }
+  tbody td:first-child{text-align:left;color:#dbe4f0;}
+  tbody tr:last-child td{border-bottom:1.5px solid var(--text-dim);}
+  tbody td.sig{color:var(--cyan);font-weight:700;}
+  tbody td.nsig{color:var(--text-faint);}
+
+  /* ===== Figures ===== */
+  figure{margin:26px 0;}
+  figure img,figure svg{
+    width:100%;
+    height:auto;
+    display:block;
+    background:#0d1a2e;
+    border:1px solid var(--border);
+    border-radius:2px;
+  }
+  figcaption{
+    font-size:13px;
+    color:var(--text-faint);
+    margin-top:10px;
+    line-height:1.5;
+  }
+  figcaption b{color:var(--text-dim);}
+  .fig-grid{display:grid;grid-template-columns:1fr 1fr;gap:22px;}
+
+  ol.refs{
+    padding-left:26px;
+    font-size:13.5px;
+    color:var(--text-dim);
+  }
+  ol.refs li{margin-bottom:12px;text-align:justify;text-justify:inter-word;}
+
+  /* ===== Footer / bio ===== */
+  footer{
+    border-top:1px solid var(--border);
+    padding:46px 0 60px;
+    margin-top:20px;
+  }
+  .bio{
+    display:grid;
+    grid-template-columns:64px 1fr;
+    gap:20px;
+    align-items:start;
+  }
+  .bio .avatar{
+    width:64px;height:64px;border-radius:50%;
+    background:linear-gradient(135deg,var(--cyan-soft),var(--card));
+    display:flex;align-items:center;justify-content:center;
+    font-family:var(--mono);color:var(--cyan);font-weight:700;font-size:20px;
+    border:1px solid var(--border);
+  }
+  .bio h3{margin:0 0 6px;color:#fff;font-size:16px;}
+  .bio p{font-size:13.5px;color:var(--text-dim);margin:0 0 12px;}
+  .bio .links{display:flex;gap:16px;font-family:var(--mono);font-size:12.5px;flex-wrap:wrap;}
+  .copyright{
+    font-family:var(--mono);
+    font-size:11.5px;
+    color:var(--text-faint);
+    margin-top:34px;
+    text-align:center;
+  }
+
+  @media (max-width:720px){
+    .stats{grid-template-columns:repeat(2,1fr);}
+    nav.toc ol{columns:1;}
+    .fig-grid{grid-template-columns:1fr;}
+    .trio{grid-template-columns:1fr;}
+    .bio{grid-template-columns:48px 1fr;}
+    header.hero{padding:44px 0 32px;}
+    main{padding:38px 0 20px;}
+  }
+  @media (prefers-reduced-motion:reduce){
+    html{scroll-behavior:auto;}
+  }
+</style>
+</head>
+<body>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="eyebrow">
+      <span>Web Mining</span>
+      <span>Sentiment Analysis</span>
+      <span>Statistical Modeling</span>
+      <span>2026</span>
+    </div>
+    <h1 class="title">The Influence of Textual Sentiment in Video Titles and Descriptions on Public Comment Polarity and View Counts</h1>
+    <p class="subtitle">Does positive framing actually drive views — or is topic category the variable doing all the work? A video-level regression study spanning gaming, news/politics, and entertainment content.</p>
+    <div class="meta-line">
+      <span><strong>Submitted</strong> August 2026</span>
+      <span>·</span>
+      <span><strong>Data source</strong> YouTube Data API v3</span>
+      <span>·</span>
+      <span><strong>Tools</strong> VADER · Transformer Emotion Classifier · Python (statsmodels)</span>
+      <span>·</span>
+      <span><strong>Environment</strong> Google Colab</span>
+    </div>
+    <div class="author-block">
+      <span class="name">Md. Shimul Ahmed Bappi</span>
+      <span class="affil">Undergraduate · Aspiring Researcher</span>
+    </div>
+    <div class="author-block">
+      <span class="affil">Department of Statistics and Data Science, Jahangirnagar University, Savar, Dhaka 1342, Bangladesh</span>
+    </div>
+    <div class="author-links">
+      <a href="mailto:shimulbappi.sds49@gmail.com">Email</a>
+      <a href="https://github.com/Shimul-Bappi" target="_blank" rel="noopener">GitHub</a>
+      <a href="https://www.linkedin.com/in/shimul-bappi" target="_blank" rel="noopener">LinkedIn</a>
+      <a href="https://www.researchgate.net/profile/Md-Bappi-2" target="_blank" rel="noopener">ResearchGate</a>
+    </div>
+
+    <div class="stats">
+      <div class="stat"><span class="num">70</span><span class="label">Videos Analyzed</span></div>
+      <div class="stat"><span class="num">6,671</span><span class="label">Comments Mined</span></div>
+      <div class="stat"><span class="num">3</span><span class="label">Niches Compared</span></div>
+      <div class="stat"><span class="num">42.3%</span><span class="label">Variance Explained (R²)</span></div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+
+  <div class="abstract">
+    <h2>Abstract</h2>
+    <p>Content creators and platform researchers routinely treat emotional framing — upbeat titles, enthusiastic descriptions — as a lever for audience reach. This study tests that assumption directly. Seventy YouTube videos spanning three thematic niches (gaming, news/politics, and entertainment) were collected via the YouTube Data API v3, together with 6,671 top-level comments. Title and description sentiment were scored with the VADER lexicon-based model; individual comments were passed through a transformer-based emotion classifier and aggregated to a video-level average comment polarity. An ordinary least squares model regressing log(view count) on title sentiment, description sentiment, and niche explained 42.3% of variance (R² = 0.423, F(4,62) = 11.38, p &lt; .001), but niche membership — not sentiment — carried nearly all of the explanatory power: news/politics videos drew significantly fewer views than entertainment videos holding sentiment constant (β = −4.263, p &lt; .001), while title sentiment showed no reliable association with views (β = 0.125, p = .881). Description sentiment showed a significant <em>negative</em> association with views (β = −1.420, p = .040) once niche was controlled. A one-way ANOVA confirmed that title sentiment itself differs systematically by niche (F(2,64) = 7.35, p = .0013), and a exploratory model omitting niche explained almost none of the variance in views (R² = 0.060, p = .140) — evidence that topic category, not affective tone, is the dominant driver of virality in this sample, and that naïve sentiment–virality correlations are vulnerable to omitted-variable bias from content category.</p>
+    <div class="keywords"><b>Index Terms —</b> YouTube analytics, sentiment analysis, VADER, emotion classification, view-count prediction, content niche, omitted-variable bias, web mining</div>
+  </div>
+
+  <nav class="toc">
+    <h2>Table of Contents</h2>
+    <ol>
+      <li><span class="roman">I.</span><a href="#intro">Introduction</a></li>
+      <li><span class="roman">II.</span><a href="#background">Background and Related Work</a></li>
+      <li><span class="roman">III.</span><a href="#methodology">Methodology</a></li>
+      <li><span class="roman">IV.</span><a href="#results">Results</a></li>
+      <li><span class="roman">V.</span><a href="#discussion">Discussion</a></li>
+      <li><span class="roman">VI.</span><a href="#conclusion">Conclusion</a></li>
+      <li><span class="roman">VII.</span><a href="#references">References</a></li>
+    </ol>
+  </nav>
+
+  <article>
+
+    <section id="intro">
+      <h2 class="sec-title"><span class="roman">I</span> Introduction</h2>
+      <p>The intuition that positive, high-energy framing drives engagement is deeply embedded in content-creation practice: titles are workshopped for emotional punch, descriptions are written to sell enthusiasm, and thumbnails are optimized for arousal. Yet this intuition is rarely tested against a competing explanation — that what a video is <em>about</em> may matter far more than how it is <em>framed</em>. A gaming highlight reel, a political explainer, and a celebrity interview do not compete for the same baseline attention, regardless of how their titles are worded.</p>
+      <p>This study treats content niche as a rival explanatory variable to sentiment, rather than a nuisance to control away. Using a sample of 70 YouTube videos drawn from three niches — gaming, news/politics, and entertainment — this research quantifies (i) the raw correlation between title/description sentiment and view count, (ii) whether that correlation survives once niche is held constant, and (iii) whether niche itself shapes how creators frame their titles in the first place. A secondary line of inquiry examines the relationship between a video's promotional sentiment and the sentiment actually expressed by its audience in the comment section, and whether comment-section emotion carries any independent signal about video reach.</p>
+
+      <h3 class="sub-title"><span class="letter">A.</span>Research Questions</h3>
+      <p>The study is organized around three research questions, moving from a single-variable trigger, to an audience-response mechanism, to the moderating role of content category:</p>
+      <div class="callout">
+        <b>RQ1 (The Click Trigger).</b> How does the emotional polarity of a video title — and, more specifically, its emotional intensity relative to a neutral baseline — affect the video's overall view count?
+      </div>
+      <div class="callout">
+        <b>RQ2 (The Echo Chamber Effect).</b> Does the textual sentiment a creator establishes in the video description act as an emotional anchor, mirroring or steering the polarity of the public comment section?
+      </div>
+      <div class="callout">
+        <b>RQ3 (The Moderating Variable).</b> How do the RQ1 and RQ2 relationships vary across different video categories (in this study: gaming, news/politics, and entertainment)?
+      </div>
+
+      <h3 class="sub-title"><span class="letter">B.</span>Conceptual Framework</h3>
+      <p>Two complementary theories motivate the hypotheses below. <b>Cognitive Schema Theory</b> [11] holds that audiences process new stimuli against pre-existing mental templates, and that a stimulus deviating clearly from a neutral, low-arousal baseline — whether toward strong positive or strong negative affect — is more likely to break through routine scanning and be attended to and acted upon; applied to RQ1, this predicts that title sentiment <em>intensity</em>, not merely its direction, should draw clicks. <b>Emotional Contagion Theory</b> [12] holds that one party's expressed affect can induce a similar affective state in an observer through automatic mimicry and synchronization; applied to RQ2, this predicts that a creator's affective framing in a description can prime or "anchor" the emotional register of subsequent viewer comments.</p>
+
+      <h3 class="sub-title"><span class="letter">C.</span>Hypotheses</h3>
+      <p>The two research questions above yield two testable hypotheses:</p>
+      <div class="callout">
+        <b>H1 (Title Polarity → Virality).</b> Videos with strong emotional polarity in their titles — high positive or high negative sentiment — achieve higher view counts than videos with neutral, low-intensity titles.<br>
+        <span style="color:var(--text-faint);">H1<sub>0</sub>: Title sentiment (VADER compound) is not associated with log(view count).</span>
+      </div>
+      <div class="callout">
+        <b>H2 (Description Sentiment → Comment Anchoring).</b> Positive video descriptions prime the audience, resulting in more positive comment-section sentiment than negative or neutral descriptions.<br>
+        <span style="color:var(--text-faint);">H2<sub>0</sub>: Description sentiment (VADER compound) is not associated with average comment polarity.</span>
+      </div>
+      <p>Operationalization note: this study's collected data score title and description sentiment as a continuous, signed VADER compound value (−1 to +1) rather than as a discrete high/low-intensity or positive/negative/neutral category. H1 is therefore tested here as a continuous polarity–virality relationship (Section IV-C), which is the direct empirical analogue of the click-trigger question in RQ1; testing the sharper "high-intensity vs. neutral" contrast implied by Cognitive Schema Theory — e.g., by splitting titles on <code>|title_sentiment|</code> — is noted as a natural next step in Section V. H2 is tested as the continuous description-sentiment–to–comment-polarity relationship (Section IV-D), the direct empirical analogue of the echo-chamber question in RQ2. RQ3 is addressed directly by re-estimating both relationships with content niche included as a moderating/control variable (Section IV-E–IV-G).</p>
+
+      <h3 class="sub-title"><span class="letter">D.</span>Objectives of the Study</h3>
+      <p>The specific objectives of this study are as follows:</p>
+      <ol class="refs" style="padding-left:22px;">
+        <li>To collect video metadata and top-level comments for 70 videos across three content niches (gaming, news/politics, entertainment) via the YouTube Data API v3.</li>
+        <li>To score title and description sentiment for each video using the VADER lexicon-based sentiment model.</li>
+        <li>To classify comment-level emotion using a transformer-based classifier and aggregate it to a video-level average comment polarity.</li>
+        <li>To model log(view count) as a joint function of title sentiment, description sentiment, and content niche.</li>
+        <li>To test whether content niche predicts title sentiment independently of its relationship to view count.</li>
+        <li>To compare a sentiment-only model against a niche-controlled model, quantifying the risk of omitted-variable bias in sentiment–virality claims.</li>
+      </ol>
+      <p>Together, RQ1–RQ3, the two hypotheses, and these six objectives are evaluated first as simple bivariate relationships (Section IV-C, IV-D) and then re-evaluated within a multivariate model that holds content niche constant (Section IV-E), since niche is hypothesized — and, per Section IV-F, confirmed — to shape the relationship between stated sentiment and audience-facing outcomes.</p>
+    </section>
+
+    <section id="background">
+      <h2 class="sec-title"><span class="roman">II</span> Background and Related Work</h2>
+      <h3 class="sub-title"><span class="letter">A.</span>Sentiment Analysis of Short-Form Text</h3>
+      <p>VADER (Valence Aware Dictionary and sEntiment Reasoner) [1] remains a standard tool for scoring short, informal text such as social media titles and comments. Its rule-based lexicon incorporates grammatical heuristics — capitalization, punctuation, degree modifiers, negation — to produce a normalized compound score between −1 and +1, and it requires no domain-specific training data, which makes it well suited to heterogeneous corpora spanning multiple content niches [6].</p>
+      <h3 class="sub-title"><span class="letter">B.</span>Transformer-Based Emotion Classification</h3>
+      <p>Where VADER provides a single polarity dimension, transformer-based classifiers fine-tuned on the Ekman [9] taxonomy of discrete emotions — anger, disgust, fear, joy, neutral, sadness, and surprise — provide a richer, categorical read on affect. Distilled architectures such as DistilRoBERTa [8] retain the great majority of upstream transformer performance at a fraction of the inference cost, making per-comment classification tractable across corpora of thousands of comments [3]. Hartmann et al. [4] demonstrated that such classifiers meaningfully outperform lexicon methods on nuanced, non-lexical emotional expression — a property this study leverages for comment-level scoring.</p>
+      <h3 class="sub-title"><span class="letter">C.</span>Engagement, Virality, and Confounding by Topic</h3>
+      <p>Prior work on YouTube and social media engagement has generally examined sentiment and virality within a single content domain — movie trailers [7], political discourse [10], or news items [5] — rather than across domains simultaneously. Thelwall [2] documented systematic differences in how comment sentiment relates to engagement across contexts, cautioning that engagement dynamics are not uniform across content types. This study extends that caution into the predictor side of the relationship: if content niche is correlated with both sentiment and view count, any bivariate sentiment–virality correlation risks conflating the effect of framing with the effect of topic.</p>
+    </section>
+
+    <section id="methodology">
+      <h2 class="sec-title"><span class="roman">III</span> Methodology</h2>
+      <h3 class="sub-title"><span class="letter">A.</span>Data Collection</h3>
+      <p>Seventy videos were identified across three content niches — gaming, news/politics, and entertainment — via the YouTube Data API v3 and collected in August 2026. For each video, metadata (title, description, view count, like count) and up to 100 top-level comments (text, like count) were retrieved via the <code>commentThreads.list</code> endpoint. Across the sample, 6,671 top-level comments were retrieved, an average of 95.3 comments per video, reflecting the applied per-video comment cap together with videos that had fewer comments available or comments disabled.</p>
+      <h3 class="sub-title"><span class="letter">B.</span>Title and Description Sentiment</h3>
+      <p>Video titles and descriptions were cleaned (URL and HTML stripping, whitespace normalization) and scored with the VADER <code>SentimentIntensityAnalyzer</code> [1], producing a compound score in [−1, 1] for each field independently.</p>
+      <h3 class="sub-title"><span class="letter">C.</span>Comment Emotion Classification</h3>
+      <p>Each retrieved comment was classified by a transformer-based emotion model into one of seven discrete Ekman-taxonomy labels [4], [9]. Emotion labels were mapped to a signed polarity score, and comments were aggregated per video by mean to yield <code>avg_comment_polarity</code>, together with each video's single most frequent (dominant) comment emotion label.</p>
+      <h3 class="sub-title"><span class="letter">D.</span>Video-Level Aggregation</h3>
+      <p>Title-level, description-level, and comment-aggregate sentiment scores were merged with video metadata into a single video-level analysis table (67 videos with complete records across sentiment, comment, and niche fields; three of the original 70 were excluded due to missing metadata or comment fields). A derived <code>sentiment_gap</code> variable was computed as title sentiment minus average comment polarity, capturing the divergence between a video's promotional framing and its audience's actual expressed sentiment.</p>
+      <h3 class="sub-title"><span class="letter">E.</span>Statistical Modeling</h3>
+      <p>Three models were fit. First, an OLS regression of log(1 + view count) on title sentiment, description sentiment, and niche (categorical, entertainment as reference level) tested whether sentiment predicts virality once topic is held constant. Second, a one-way ANOVA of title sentiment on niche tested whether creators in different niches systematically frame titles differently. Third, an exploratory OLS regression of log(view count) on title sentiment and average comment polarity, omitting niche, served as a baseline against which the niche-controlled model could be compared.</p>
+    </section>
+
+    <section id="results">
+      <h2 class="sec-title"><span class="roman">IV</span> Results</h2>
+
+      <h3 class="sub-title"><span class="letter">A.</span>Dataset Overview</h3>
+      <p>The final analysis dataset comprised 67 videos with complete records (of 70 collected) and 6,671 associated top-level comments across the gaming, news/politics, and entertainment niches. Table 1 reports descriptive statistics for all continuous variables.</p>
+
+      <div class="table-wrap">
+        <table>
+          <caption>TABLE 1 — Descriptive Statistics (N = 67)</caption>
+          <thead>
+            <tr><th>Variable</th><th>Mean</th><th>SD</th><th>Min</th><th>25%</th><th>Median</th><th>75%</th><th>Max</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Title sentiment (VADER)</td><td>0.067</td><td>0.431</td><td>−0.832</td><td>0.000</td><td>0.000</td><td>0.422</td><td>0.953</td></tr>
+            <tr><td>Description sentiment (VADER)</td><td>0.503</td><td>0.528</td><td>−0.973</td><td>0.000</td><td>0.718</td><td>0.974</td><td>0.998</td></tr>
+            <tr><td>Avg. comment polarity</td><td>0.195</td><td>0.363</td><td>−0.696</td><td>−0.091</td><td>0.200</td><td>0.475</td><td>1.000</td></tr>
+            <tr><td>View count</td><td>11,458,420</td><td>31,245,480</td><td>460</td><td>18,390</td><td>54,176</td><td>1,858,856</td><td>143,348,900</td></tr>
+            <tr><td>Like count</td><td>282,404</td><td>711,060</td><td>11</td><td>172</td><td>615</td><td>95,230</td><td>3,236,260</td></tr>
+            <tr><td>Sentiment gap (title − comment)</td><td>−0.127</td><td>0.463</td><td>−1.245</td><td>−0.475</td><td>−0.092</td><td>0.193</td><td>0.762</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-size:13px;color:var(--text-faint);margin-top:2px;">View and like counts are heavily right-skewed (max/median ratios of 2,646× and 5,262× respectively), consistent with the well-documented power-law distribution of online video popularity; log(view count) is used as the dependent variable in all regression models below.</p>
+
+      <h3 class="sub-title"><span class="letter">B.</span>Correlation Structure</h3>
+      <p>Pairwise correlations among the four continuous sentiment and reach variables were uniformly weak-to-moderate and positive (Table 2, Fig. 1). Title sentiment correlated most strongly with average comment polarity (r = 0.329) and description sentiment (r = 0.318), but its correlation with log(view count) was weak (r = 0.149). Description sentiment's correlation with log(view count) was weaker still (r = 0.063).</p>
+
+      <div class="table-wrap">
+        <table>
+          <caption>TABLE 2 — Correlation Matrix</caption>
+          <thead>
+            <tr><th></th><th>Title sent.</th><th>Desc. sent.</th><th>Comment pol.</th><th>log(views)</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Title sentiment</td><td>1.000</td><td>0.318</td><td>0.329</td><td>0.149</td></tr>
+            <tr><td>Description sentiment</td><td>0.318</td><td>1.000</td><td>0.179</td><td>0.063</td></tr>
+            <tr><td>Avg. comment polarity</td><td>0.329</td><td>0.179</td><td>1.000</td><td>0.232</td></tr>
+            <tr><td>log(view count)</td><td>0.149</td><td>0.063</td><td>0.232</td><td>1.000</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <figure>
+        <svg viewBox="0 0 602 498" xmlns="http://www.w3.org/2000/svg" font-family="SFMono-Regular,Consolas,monospace">
+<rect x="0" y="0" width="602" height="498" fill="#0d1a2e"/>
+<text x="204.0" y="32" fill="#9fb0c7" font-size="12" text-anchor="middle">Title sent.</text>
+<text x="312.0" y="32" fill="#9fb0c7" font-size="12" text-anchor="middle">Desc. sent.</text>
+<text x="420.0" y="32" fill="#9fb0c7" font-size="12" text-anchor="middle">Comment pol.</text>
+<text x="528.0" y="32" fill="#9fb0c7" font-size="12" text-anchor="middle">log(views)</text>
+<text x="136" y="104.0" fill="#9fb0c7" font-size="12" text-anchor="end">Title sent.</text>
+<text x="136" y="212.0" fill="#9fb0c7" font-size="12" text-anchor="end">Desc. sent.</text>
+<text x="136" y="320.0" fill="#9fb0c7" font-size="12" text-anchor="end">Comment pol.</text>
+<text x="136" y="428.0" fill="#9fb0c7" font-size="12" text-anchor="end">log(views)</text>
+<rect x="150" y="46" width="104" height="104" fill="rgb(63,216,201)" rx="2"/>
+<text x="202.0" y="104.0" fill="#0a1628" font-size="17" font-weight="600" text-anchor="middle">1.000</text>
+<rect x="258" y="46" width="104" height="104" fill="rgb(28,92,104)" rx="2"/>
+<text x="310.0" y="104.0" fill="#e7edf6" font-size="17" font-weight="600" text-anchor="middle">0.318</text>
+<rect x="366" y="46" width="104" height="104" fill="rgb(29,94,106)" rx="2"/>
+<text x="418.0" y="104.0" fill="#e7edf6" font-size="17" font-weight="600" text-anchor="middle">0.329</text>
+<rect x="474" y="46" width="104" height="104" fill="rgb(20,61,81)" rx="2"/>
+<text x="526.0" y="104.0" fill="#e7edf6" font-size="17" font-weight="600" text-anchor="middle">0.149</text>
+<rect x="150" y="154" width="104" height="104" fill="rgb(28,92,104)" rx="2"/>
+<text x="202.0" y="212.0" fill="#e7edf6" font-size="17" font-weight="600" text-anchor="middle">0.318</text>
+<rect x="258" y="154" width="104" height="104" fill="rgb(63,216,201)" rx="2"/>
+<text x="310.0" y="212.0" fill="#0a1628" font-size="17" font-weight="600" text-anchor="middle">1.000</text>
+<rect x="366" y="154" width="104" height="104" fill="rgb(21,67,85)" rx="2"/>
+<text x="418.0" y="212.0" fill="#e7edf6" font-size="17" font-weight="600" text-anchor="middle">0.179</text>
+<rect x="474" y="154" width="104" height="104" fill="rgb(16,46,68)" rx="2"/>
+<text x="526.0" y="212.0" fill="#e7edf6" font-size="17" font-weight="600" text-anchor="middle">0.063</text>
+<rect x="150" y="262" width="104" height="104" fill="rgb(29,94,106)" rx="2"/>
+<text x="202.0" y="320.0" fill="#e7edf6" font-size="17" font-weight="600" text-anchor="middle">0.329</text>
+<rect x="258" y="262" width="104" height="104" fill="rgb(21,67,85)" rx="2"/>
+<text x="310.0" y="320.0" fill="#e7edf6" font-size="17" font-weight="600" text-anchor="middle">0.179</text>
+<rect x="366" y="262" width="104" height="104" fill="rgb(63,216,201)" rx="2"/>
+<text x="418.0" y="320.0" fill="#0a1628" font-size="17" font-weight="600" text-anchor="middle">1.000</text>
+<rect x="474" y="262" width="104" height="104" fill="rgb(24,76,92)" rx="2"/>
+<text x="526.0" y="320.0" fill="#e7edf6" font-size="17" font-weight="600" text-anchor="middle">0.232</text>
+<rect x="150" y="370" width="104" height="104" fill="rgb(20,61,81)" rx="2"/>
+<text x="202.0" y="428.0" fill="#e7edf6" font-size="17" font-weight="600" text-anchor="middle">0.149</text>
+<rect x="258" y="370" width="104" height="104" fill="rgb(16,46,68)" rx="2"/>
+<text x="310.0" y="428.0" fill="#e7edf6" font-size="17" font-weight="600" text-anchor="middle">0.063</text>
+<rect x="366" y="370" width="104" height="104" fill="rgb(24,76,92)" rx="2"/>
+<text x="418.0" y="428.0" fill="#e7edf6" font-size="17" font-weight="600" text-anchor="middle">0.232</text>
+<rect x="474" y="370" width="104" height="104" fill="rgb(63,216,201)" rx="2"/>
+<text x="526.0" y="428.0" fill="#0a1628" font-size="17" font-weight="600" text-anchor="middle">1.000</text>
+</svg>
+        <figcaption><b>Fig. 1.</b> Correlation matrix among title sentiment, description sentiment, average comment polarity, and log(view count), N = 67. All correlations are weak-to-moderate; log(view count) correlates most strongly with comment polarity (r = 0.232) and least with description sentiment (r = 0.063).</figcaption>
+      </figure>
+
+      <h3 class="sub-title"><span class="letter">C.</span>H1 — Title Sentiment and View Count (RQ1)</h3>
+      <p>A simple bivariate plot of title sentiment against log(view count) (Fig. 2) shows a shallow positive trend with a wide confidence band, consistent with the weak correlation reported above (r = 0.149). Title sentiment values cluster heavily at 0.000 — the VADER-neutral default for short, information-dense titles — meaning much of the visible spread in views at that point is driven by factors other than title tone.</p>
+
+      <figure>
+        <img src="data:image/png;base64,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yy0wm8247bbbcMYZZ+C9994LCjQj+T/l5ubimGOOwZo1a0LuW716NeRyOU4//XQA3sDjqaeewpQpU3DvvffiuuuuQ1FREbZv395h3XTV7t27cdFFF2HXrl24+uqr8T//8z84dOgQLrnkEmzevNm/X21tLS677DLs3r0b1157LS6//HKsXLkSK1asCDnmTz/9hNLS0pDAbu7cuXC5XCHPu7m5Gd988w1OPfVUaDSadsvalWtu4sSJkCQJGzdu9D9u48aNkMlkQV9CGhsbsXfvXhxzzDHtnm///v3Yu3cvTjnlFKSlpbW7n4/NZsMll1yCjz76CHPnzsUf/vAHpKenY/HixXjllVc6fXx7YvH6SU9Px4ABA7Bp06aoy0HUJYKIIvLuu++K0tLSDn9mz57d7uOvvfZaMW3atHbvnzZtWof3h/OPf/xDlJaWioqKipD7nnjiCVFaWhq0bdy4ceLOO+8M2df33HzHMZlMYtKkSeLuu+8O2u/w4cNi4sSJIdvb+vXXX8WYMWNEaWmpOOuss8TSpUvFZ599JiwWS9B+kZznzjvvFKWlpeKpp54K2vfss88W55xzjv92Q0ODKC0tFU888URIucLVSWlpqRg1alRQHb755puitLRUHH/88aK1tdW//bHHHguqJ4/HI0477TRx5ZVXCo/H49/ParWK6dOniyuuuCLk3EuWLAk6/w033CAmT54ctK29/1M4vrL+8ssvQdtnzZolLr30Uv/tM888U1x77bVdOmZXtK3j66+/XowcOVIcPHjQv622tlaMHz9eXHTRRf5tDz74oCgrKxM7duzwb2tqahKTJ08OuZZPPPFEceONN4ac2+VyieOPP14sWLAgaPsbb7whSktLxddff+3f1p1re/bs2eLmm2/23z7nnHPETTfdJEpLS0V5ebkQQohPP/1UlJaWip07d7ZbV59//rkoLS0VL730Urv7BHr55ZdFaWmp+PDDD/3bHA6HWLBggRg3bpz/mvzuu+9EaWmp+O6774IeX1FRIUpLS8W7777r3xaL14/PlVdeKc4444wuPReiaLFFlShK9957L1566aWQn+6mPVq3bh3WrVsXo1J2z4YNG2A0GjF79uygVmOZTIaxY8d2OqP+qKOOwgcffIAzzzwTlZWVWLFiBW644QYcd9xxePvtt7t1ngsuuCDo9sSJE7udemjq1KlBY3zH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ItZZ5KKps2hjtJQLVIcNG4aDBw+Gvc9ut0d9XEmSoNPpon58stJqtb3yecUL6ytyrLPIsc4il6g6G6TTYWBRdspN0uQ1FjnWWeQiqbNoXzMpN5lq2rRpaG5uxs6dO/3bmpqasH37dowcOTKBJSMiot6IkzSJEiflWlRnzJiB0aNH46abbsKtt94KtVqN5557DiqVChdeeGGii0dEREREMZJyLaoymQzPPfccxo0bh3vvvRe33XYb0tLS8PrrryMvLy/RxSMiIiKiGEm5FlUAyM7Oxl/+8pdEF4OIiIiI4ijlWlSJiIiIqG9goEpERERESYmBKhERERElJQaqRERERJSUGKgSERERUVJioEpERERESUkSQohEFyLRNm3aBCEEVCpVoosSM0IIOJ1OKJVKrqLSBayvyLHOIsc6ixzrLDKsr8ixziIXTZ05HA5IkoQJEyZEdK6UzKMaa73xwpQkqVcF3vHG+ooc6yxyrLPIsc4iw/qKHOssctHUmSRJUcVbbFElIiIioqTEMapERERElJQYqBIRERFRUmKgSkRERERJiYEqERERESUlBqpERERElJQYqBIRERFRUmKgSkRERERJiYEqERERESUlBqpERERElJQYqBIRERFRUmKgSkRERERJiYFqilq3bh3OPPNMjB49GjNnzsS7777b6WOefPJJlJWVhf259957O93vjTfeiOdTirto6uzQoUNh6+L3v/99yL6bNm3CggULMGbMGEybNg3PPfcchBDxeCo9Ipr62rJlC5YsWYJTTz0VY8eOxWmnnYbHHnsMFoslaL9Uv8b27NmDK664AuPGjcPxxx+PZcuWweFwdPo4IQSee+45nHzyyRgzZgwWLFiAn3/+OWS/2tpa3HjjjRg/fjwmT56M//f//h9MJlMcnknPiabO6urqsGzZMpx11lkYP348TjzxRNx+++2orKwM2u/7778Pez3deuut8XxKcRXtNTZ9+vSwdWG324P24zXm1d61U1ZWhtNPP73T/VL5GgOAAwcO4N5778VZZ52FESNGYM6cOV16XE++lyki2puSwsaNG7Fo0SKcd955uOuuu/Ddd9/h//2//we9Xh/0wmpr/vz5+N3vfhe07YcffsCjjz6KE088MWi7RqPBK6+8ErStpKQkdk+ih0VbZz633XYbpkyZ4r+t1+uD7j9w4ACuuuoqHH/88bjl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" alt="Scatter plot of title sentiment (VADER compound) versus log(1 + view count), with linear regression line and 95% confidence band, showing a shallow positive but noisy relationship.">
+        <figcaption><b>Fig. 2 (H1).</b> Title sentiment (VADER compound, −1 to 1) vs. log(1 + view count), N = 67, with OLS trend line and 95% confidence band. The bivariate relationship is positive but weak and imprecisely estimated (r = 0.149).</figcaption>
+      </figure>
+
+      <h3 class="sub-title"><span class="letter">D.</span>H2 — Description Sentiment and Comment Reaction (RQ2)</h3>
+      <p>The relationship between description sentiment and average comment polarity was similarly weak and positive (r = 0.179). Description sentiment is bimodal in this sample — a large mass of videos at 0.000 (neutral/no description) and a second mass near 1.000 (maximally positive, promotional descriptions) — while comment polarity is spread more continuously across roughly −0.7 to 1.0. The wide confidence band around the fitted trend reflects both this bimodality and the modest sample size; comment-section sentiment is only loosely predictable from a description's own stated tone.</p>
+
+      <div class="callout"><b>Reading H1 and H2 together:</b> neither a video's stated framing (title) nor its promotional tone (description) shows a strong bivariate relationship with either views or audience-expressed sentiment. The next section tests whether this changes once content niche is taken into account.</div>
+
+      <h3 class="sub-title"><span class="letter">E.</span>Multivariate Model — Does Sentiment Predict Views Once Niche Is Controlled?</h3>
+      <p>Table 3 reports the OLS regression of log(view count) on title sentiment, description sentiment, and niche (entertainment as reference category). The full model explained 42.3% of variance in log(view count) (R² = 0.423, adjusted R² = 0.386, F(4, 62) = 11.38, p &lt; .001) — nearly three times the variance explained by sentiment alone (see Section IV-H).</p>
+
+      <div class="table-wrap">
+        <table>
+          <caption>TABLE 3 — OLS Regression: log(view_count) ~ title_sentiment + description_sentiment + C(niche); N = 67, R² = 0.423</caption>
+          <thead>
+            <tr><th>Predictor</th><th>Coef.</th><th>SE</th><th>t</th><th>p</th><th>95% CI</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Intercept (Entertainment baseline)</td><td>14.176</td><td>0.691</td><td>20.529</td><td class="sig">&lt; .001</td><td>[12.796, 15.557]</td></tr>
+            <tr><td>Niche: Gaming (vs. Entertainment)</td><td>1.269</td><td>0.984</td><td>1.290</td><td class="nsig">.202</td><td>[−0.698, 3.237]</td></tr>
+            <tr><td>Niche: News/Politics (vs. Entertainment)</td><td>−4.263</td><td>0.796</td><td>−5.353</td><td class="sig">&lt; .001</td><td>[−5.855, −2.671]</td></tr>
+            <tr><td>Title sentiment</td><td>0.125</td><td>0.832</td><td>0.150</td><td class="nsig">.881</td><td>[−1.539, 1.789]</td></tr>
+            <tr><td>Description sentiment</td><td>−1.420</td><td>0.678</td><td>−2.095</td><td class="sig">.040</td><td>[−2.775, −0.065]</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-size:13px;color:var(--text-faint);">Durbin–Watson = 0.563, indicating positive autocorrelation in residuals (likely driven by within-niche clustering); standard errors assume correct model specification and should be interpreted with this in mind.</p>
+
+      <p>Two findings stand out. First, niche carries the model's explanatory weight: news/politics videos show significantly fewer views than entertainment videos holding sentiment constant (β = −4.263, p &lt; .001 — equivalent to roughly a 98.6% reduction in expected views, e<sup>−4.263</sup> ≈ 0.014), while the gaming–entertainment gap is not statistically distinguishable from zero (β = 1.269, p = .202). Second, sentiment's role is either negligible or in the opposite direction than expected: title sentiment shows no reliable association with views (β = 0.125, p = .881), and description sentiment shows a <em>significant negative</em> association (β = −1.420, p = .040) — more positively worded descriptions, within a given niche, are associated with fewer views, not more.</p>
+
+      <h3 class="sub-title"><span class="letter">F.</span>Does Niche Shape How Titles Are Framed? (RQ3)</h3>
+      <p>A one-way ANOVA testing title sentiment against niche was statistically significant (F(2, 64) = 7.35, p = .0013, Table 4), confirming that title sentiment itself is not independent of content category. Fig. 3 shows the distribution: entertainment titles skew positive (median ≈ 0.6, extending to near-maximal positivity), news/politics titles span a wide range from strongly negative to moderately positive with a median near zero, and gaming titles cluster tightly around neutral (median ≈ 0), consistent with the terse, matter-of-fact titling conventions typical of gaming content.</p>
+
+      <div class="table-wrap">
+        <table>
+          <caption>TABLE 4 — One-Way ANOVA: title_sentiment ~ niche</caption>
+          <thead>
+            <tr><th>Source</th><th>Sum Sq.</th><th>df</th><th>F</th><th>p</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Niche</td><td>2.287</td><td>2</td><td>7.348</td><td class="sig">.0013</td></tr>
+            <tr><td>Residual</td><td>9.958</td><td>64</td><td>—</td><td>—</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <figure>
+        <img src="data:image/png;base64,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b7+hVatWsLKyQkJCAjZs2AB9fX188skn6uM6dOiA4OBgTJgwAQEBAcjIyMDSpUvRunVr3gOCiIiIiN47ZT5AmJubY8uWLZg/fz7GjRsHExMT9O3bF5MmTdJop1QqkZubq35co0YNPH78GAsXLkRqairMzMzQvHlzTJw4Ub0CE/ByrsLGjRuxYMECBAQEoEKFCmjfvj1mzJhRYudIRERERFRalPkAAQAODg4ICQl5a5tt27ZpPG7YsGGebW9ibW2NoKAgbcsjIiIiIio3yvwcCCIiIiIiKjkMEEREREREJBoDBBERERERicYAQUREREREojFAEBERERGRaAwQREREREQkGgMEERERERGJxgBBRERERESiaR0gpk+fjqioqDfuj46OxvTp07XtnoiIiIiISiGtA8T+/fsRHx//xv0PHjzAgQMHtO2eiIiIiIhKoWIbwvT48WMYGRkVV/dERERERKQDFQrS+NixYzh+/Lj68a5du3DmzJk87VJTU3HmzBnUq1ev8BUSEREREVGpUaAAcffuXRw5cgQAIJFIEBUVhb/++kujjUQigbGxMdzc3DBt2rSiq5SIiIiIiHSuQAHC398f/v7+AABnZ2d8/fXX6NatW7EURkREREREpU+BAsSrbt68WZR1EBERERFRGaB1gHhVeno65HI5BEHIs69atWpF8RRERERERFQKaB0gsrKysGbNGuzZswfPnz9/Y7sbN25o+xRERERERFTKaB0gAgMDceDAAXh5eaFx48YwNzcvyrqIiIiIiKgU0jpAREREoF+/fpg3b15R1kNERERERKWY1jeSk0gkcHFxKcpaiIiIiIiolNM6QLRr1y7fm8gREREREVH5pXWAGDt2LB48eIDZs2fjr7/+QnJyMp4/f57nPyIiIiIiKj+0ngPh7e0NALh+/Tr27NnzxnZchYmIiIiIqPzQOkCMGzcOEomkKGshIiIiIqJSTusAMWHChKKsg4iIiIiIygCt50C8LjU1Fbm5uUXVHRERERERlUKFChDXrl2Dn58fGjRogGbNmuH8+fMAgOTkZIwZMwaRkZFFUiQREREREZUOWgeIy5cvY/DgwYiLi0P37t2hVCrV+ywtLZGWloadO3cWSZFERERERFQ6aB0gVq5cCQcHB4SFhWHSpEl59jdr1gxRUVGFKo6IiIiIiEoXrQPEtWvX0Lt3b0il0nxX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BAQEICMjA0uXLlXfvZqIiIiI6H2idYBITExEYmIimjRpot528+ZNbN68GdnZ2ejatWuJBAtzc3Ns2bIF8+fPx7hx42BiYoK+ffti0qRJGu2USiVyc3M1to0aNQqCIGDz5s1ITk5G3bp1sWnTJtjY2KjbGBgYYOPGjViwYAECAgJQoUIFtG/fHjNmzCj2cyMiIiIiKm20DhALFizAixcvEBISAgB48uQJhg8fDoVCARMTE4SHh+Pbb7+Ft7d3UdX6Rg4ODuo63mTbtm15tkkkEvj7+8Pf3/+tx1pbWyMoKKgwJRIRERERlQta30guOjoaLVq0UD8+cOAAMjMz8csvv6jvDr158+YiKZKIiIiIiEoHrQNESkoKKlWqpH78+++/w83NDba2ttDT00P79u15p2YiIiIionJG6wBhaWmpXldZLpfj6tWr+Pjjj9X7c3NzkZOTU/gKiYiIiIio1NB6DkSLFi2wbds2mJqaIjIyEoIgoF27dur9MTExhbrRGhERERERlT5aB4gvvvgC9+7dw5IlS2BgYIApU6aoVy/Kzs7G4cOH0a1btyIrlIiIiIiIdE/rAPHhhx9ix44dSE1NhaGhIaRSqXqfUqnEli1bUKVKlSIpkoiIiIiISget50ComJmZaYQH4OWt7p2dnWFhYaHe9uTJE9StWxdnz54t7FMSEREREZGOFDpAFIQgCCX5dEREREREVMRKNEAQEREREVHZxgBBRERERESiMUAQEREREZFoDBBERERERCQaAwQREREREYnGAEFERERERKKVWIAwMjJCr169YGVlVVJPSURERERERUzrO1GrXL16FZGRkXj69CkGDx4MOzs7ZGRkIDY2FnZ2djAxMQEAmJqaYtGiRYUumIiIiIiIdEfrAJGdnY2AgAAcP34cgiBAIpGgTZs2sLOzg56eHnx9fTFixAiMGTOmKOslIiIiIiId0noI07fffovff/8dgYGBOHLkiMZdpg0NDdGxY0ccP368SIokIiIiIqLSQesAcejQIQwcOBADBgyAubl5nv0ODg5ISEgoVHFERERERFS6aB0gnj59Cicnpzfu19fXR2ZmprbdExERERFRKaR1gKhatSpiY2PfuP/y5cuwtbXVtnsiIiIiIiqFtA4QXbt2xY4dO3DlyhX1NolEAgDYtWsXDh8+jJ49exa6QCIiIiIiKj20XoXp008/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w5d69+6Nnj17wt7eHpmZmQgNDcXRo0cxY8aMQs1/ICIiIiIqq8p0gGjSpAmCgoKwatUq7NmzB9WqVcOCBQvQqVMnjXa5ublQKpV5jg8NDYWrq+sbrybY2toiJCQET548gUQigaOjI7755ht07969WM6HiIiIiKi0K9MBAgDatWuHdu3avbXNrVu38t2+d+/etx63atUqbcsiIiIiIiqXyuwcCCIiIiIiKnkMEEREREREJBoDBBERERERicYAQUREREREojFAEBERERGRaAwQREREREQkWplfxpWIiIrGo0ePkJaWpusyCiQhIUHjz7LC1NQUVapU0XUZRERaYYAgIiKkpKTA398/35tulgUrVqzQdQkFoqenh61bt8Lc3FzXpRARFRgDBBERwdzcHMHBwWXuCkRZZWpqyvBARGUWAwQREQEAh9QQEZEonERNRERERESiMUAQEREREZFoDBBERERERCQaAwQREREREYnGAEFERERERKIxQBARERERkWgMEEREREREJBoDBBERERERicYAQUREREREojFAEBERERGRaAwQREREREQkWgVdF/A+UigUEAQB165d03UpRERERETIzs6GRCIR1ZYBQgfE/uUQEREREZUEiUQi+juqRBAEoZjrISIiIiKicoJzIIiIiIiISDQGCCIiIiIiEo0BgoiIiIiIRGOAICIiIiIi0RggiIiIiIhINAYIIiIiIiISjQGCiIiIiIhEY4AgIiIiIiLRGCCIiIiIiEg0BggiIiIiIhKNAYKIiIiIiERjgCAiIiIiItEYIIiIiIiISDQGCKJ8CIKg6xKIiIh0KisrCwCgUCgA8N9G+g8DBFE+JBKJrksgeq/l5ubqugSi95YgCDh79ixWr14NQRBgYGAAAMjMzAQAKJVKXZZHpQADBBFefll59Tcrv/76K9asWYPs7GwdVkX0/lEFB319fQBARkaGLsshei9JJBJkZWVh06ZNCAsLQ1paGoYPH45Zs2YBAPT0+PXxfcdXAL33BEGAvr4+JBIJrl69irNnz+LYsWP44YcfcOvWLV2XR/TeUL0XAeDgwYMYMWIE9u/fj2fPnum4MqL3T8uWLdGjRw/MmTMHbm5uMDAwwLBhw3RdFpUSFXRdAJGuSSQSyOVyzJgxA5GRkWjevDni4uKQnp6On3/+GTNnzoSpqamuyyQq9yQSCeLj4zFl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" alt="Box plot of title sentiment distribution by content niche (gaming, news/politics, entertainment), showing entertainment skewed positive, news/politics wide and centered near zero, gaming tightly clustered near zero.">
+        <figcaption><b>Fig. 3.</b> Title sentiment distribution by niche (N = 67). Entertainment titles skew positive; news/politics titles span the widest range with a near-zero median; gaming titles cluster tightly around neutral. Difference across niches is statistically significant (ANOVA, p = .0013).</figcaption>
+      </figure>
+
+      <p>This is the mechanism behind the negative description-sentiment coefficient in Table 3: because niche predicts both title framing and (independently) view count, a naïve model that omits niche would misattribute niche-driven variation in views to sentiment. The multivariate model in Table 3 already nets this out — the negative description-sentiment coefficient is the <em>within-niche</em> effect, not an artifact of comparing an upbeat entertainment video to a somber news video.</p>
+
+      <h3 class="sub-title"><span class="letter">G.</span>View Count by Niche</h3>
+      <p>Reach itself differs sharply by niche. Entertainment videos in this sample show both the highest median log(view count) and by far the widest spread, ranging from moderately viewed uploads up to the corpus maximum. Gaming videos cluster narrowly at a consistently high level, with little spread between individual videos. News/politics videos occupy the lowest range overall and show the greatest relative variability, from a small number of very low-view videos up to a handful reaching entertainment-comparable reach. This pattern — entertainment high and dispersed, gaming high and consistent, news/politics low and dispersed — mirrors the significant niche coefficients estimated in Table 3.</p>
+
+      <h3 class="sub-title"><span class="letter">H.</span>Dominant Comment Emotion Across Videos</h3>
+      <p>For each video, the single most frequent comment-level emotion label was recorded. Across the 67-video sample, joy was the dominant emotion in 48 videos (71.6%), anger in 16 videos (23.9%), and sadness in 3 videos (4.5%); no video had disgust, fear, surprise, or neutral as its single most frequent comment emotion (Fig. 4). This concentration in just three of the seven possible Ekman categories suggests that, at the level of a video's modal comment reaction, audience response tends toward one of a small number of clearly polarized emotional postures rather than a diffuse mixture.</p>
+
+      <figure>
+        <svg viewBox="0 0 700 380" xmlns="http://www.w3.org/2000/svg" font-family="SFMono-Regular,Consolas,monospace">
+<rect x="0" y="0" width="700" height="380" fill="#0d1a2e"/>
+<line x1="90" y1="320.0" x2="660" y2="320.0" stroke="#1c3a5e" stroke-width="1"/>
+<text x="78" y="324.0" fill="#6d829f" font-size="11" text-anchor="end">0</text>
+<line x1="90" y1="262.0" x2="660" y2="262.0" stroke="#1c3a5e" stroke-width="1"/>
+<text x="78" y="266.0" fill="#6d829f" font-size="11" text-anchor="end">10</text>
+<line x1="90" y1="204.0" x2="660" y2="204.0" stroke="#1c3a5e" stroke-width="1"/>
+<text x="78" y="208.0" fill="#6d829f" font-size="11" text-anchor="end">20</text>
+<line x1="90" y1="146.0" x2="660" y2="146.0" stroke="#1c3a5e" stroke-width="1"/>
+<text x="78" y="150.0" fill="#6d829f" font-size="11" text-anchor="end">30</text>
+<line x1="90" y1="88.0" x2="660" y2="88.0" stroke="#1c3a5e" stroke-width="1"/>
+<text x="78" y="92.0" fill="#6d829f" font-size="11" text-anchor="end">40</text>
+<line x1="90" y1="30.0" x2="660" y2="30.0" stroke="#1c3a5e" stroke-width="1"/>
+<text x="78" y="34.0" fill="#6d829f" font-size="11" text-anchor="end">50</text>
+<rect x="135.0" y="41.60000000000002" width="130" height="278.4" fill="#3fd8c9" rx="2"/>
+<text x="200.0" y="31.600000000000023" fill="#e7edf6" font-size="14" font-weight="600" text-anchor="middle">48 (71.6%)</text>
+<text x="200.0" y="342" fill="#9fb0c7" font-size="13" text-anchor="middle">Joy</text>
+<rect x="310.0" y="227.2" width="130" height="92.8" fill="#e07a7a" rx="2"/>
+<text x="375.0" y="217.2" fill="#e7edf6" font-size="14" font-weight="600" text-anchor="middle">16 (23.9%)</text>
+<text x="375.0" y="342" fill="#9fb0c7" font-size="13" text-anchor="middle">Anger</text>
+<rect x="485.0" y="302.6" width="130" height="17.4" fill="#e0a458" rx="2"/>
+<text x="550.0" y="292.6" fill="#e7edf6" font-size="14" font-weight="600" text-anchor="middle">3 (4.5%)</text>
+<text x="550.0" y="342" fill="#9fb0c7" font-size="13" text-anchor="middle">Sadness</text>
+<text x="38" y="175.0" fill="#6d829f" font-size="11" text-anchor="middle" transform="rotate(-90 38 175.0)">Number of videos</text>
+</svg>
+        <figcaption><b>Fig. 4.</b> Distribution of the dominant (modal) comment emotion across 67 videos. Joy dominates the sample (71.6%), followed by anger (23.9%) and sadness (4.5%).</figcaption>
+      </figure>
+
+      <h3 class="sub-title"><span class="letter">I.</span>Exploratory Model Without Niche Control</h3>
+      <p>To directly quantify the omitted-variable risk identified above, an exploratory OLS model regressed log(view count) on title sentiment and average comment polarity alone, without niche. This model explained essentially none of the variance in views (R² = 0.060, adjusted R² = 0.030, F(2, 64) = 2.03, p = .140, Table 5) — neither predictor reached significance (title sentiment: p = .526; comment polarity: p = .115).</p>
+
+      <div class="table-wrap">
+        <table>
+          <caption>TABLE 5 — Exploratory OLS: log(view_count) ~ title_sentiment + avg_comment_polarity (niche omitted); N = 67, R² = 0.060</caption>
+          <thead>
+            <tr><th>Predictor</th><th>Coef.</th><th>SE</th><th>t</th><th>p</th><th>95% CI</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>Intercept</td><td>11.474</td><td>0.450</td><td>25.488</td><td class="sig">&lt; .001</td><td>[10.575, 12.373]</td></tr>
+            <tr><td>Title sentiment</td><td>0.625</td><td>0.981</td><td>0.637</td><td class="nsig">.526</td><td>[−1.335, 2.584]</td></tr>
+            <tr><td>Avg. comment polarity</td><td>1.858</td><td>1.164</td><td>1.596</td><td class="nsig">.115</td><td>[−0.468, 4.183]</td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="trio">
+        <div class="card"><div class="n">R² = 0.423</div><div class="d">With niche controlled (Table 3)</div></div>
+        <div class="card"><div class="n">R² = 0.060</div><div class="d">Sentiment only, niche omitted (Table 5)</div></div>
+        <div class="card"><div class="n">7.0×</div><div class="d">Explanatory power gained by adding niche</div></div>
+      </div>
+      <p>The nearly seven-fold jump in explained variance between the sentiment-only and niche-controlled models is the study's central empirical result: sentiment, on its own, is a weak and statistically unreliable predictor of view count in this sample; content niche does almost all of the explanatory work, and sentiment's apparent role changes sign and significance once niche is properly accounted for.</p>
+
+    </section>
+
+    <section id="discussion">
+      <h2 class="sec-title"><span class="roman">V</span> Discussion</h2>
+      <p>The results converge on a single overarching conclusion: in this sample, <em>what</em> a video is about predicts its reach far better than <em>how</em> it is emotionally framed. The niche-controlled model explained more than seven times the variance of the sentiment-only model, and the two niche coefficients — particularly the large, highly significant news/politics penalty — account for the great majority of that gain. This is consistent with the intuitive but frequently overlooked fact that content categories carry different baseline audiences, distribution mechanics, and algorithmic recommendation dynamics on YouTube, independent of any single video's tone.</p>
+      <p>The negative and significant coefficient on description sentiment (β = −1.420, p = .040) is the most counterintuitive finding and merits careful interpretation. It does not mean that positive descriptions cause videos to be watched less; the design is observational and cross-sectional, and the coefficient is a within-niche partial association only. A plausible reading is compositional: within a niche, videos that rely on heavily promotional, superlative-laden descriptions may be exactly the videos that need to work hardest to draw an audience — smaller channels, less organically newsworthy content — while videos that already command attention (breaking news, major franchise or creator releases) can afford flat, informational, low-sentiment descriptions. Under this reading, description sentiment functions less as a driver of reach and more as a marker of a video's baseline pull. Distinguishing this compositional explanation from a genuine causal (e.g., audience fatigue with hype language) explanation would require either panel data tracking the same channels over time or a randomized framing experiment, neither of which this cross-sectional design can provide.</p>
+      <p>The ANOVA result — that title sentiment differs significantly by niche (p = .0013) — explains why the two models diverge so sharply. Because niche is simultaneously correlated with title framing and (independently, and much more strongly) with view count, any model that omits niche will attribute niche-driven variation in views to sentiment, inflating or reversing the apparent sentiment effect. This is a textbook omitted-variable-bias pattern, and it is directly visible in the contrast between Table 3 (R² = 0.423) and Table 5 (R² = 0.060): sentiment's estimated role is not merely weaker without niche control, it is essentially uninterpretable.</p>
+      <p>The comment-level emotion results add a complementary signal. That joy and anger together account for over 95% of dominant-emotion labels, with disgust, fear, surprise, and neutral appearing in none of the 67 videos' modal labels, suggests that comment sections in this sample tend to consolidate around a clear emotional stance per video rather than a mixed or muted one — a pattern worth further investigation as to whether it reflects genuine audience polarization or an artifact of the comment-sampling and classification pipeline.</p>
+      <p><b>Limitations.</b> (i) The sample of 70 videos (67 analyzed) is modest for a three-group, four-predictor regression, and standard errors — particularly for the niche coefficients — should be read with corresponding caution. (ii) Videos were not randomly sampled from each niche's full population; a "top videos" collection strategy biases the sample toward content that is already popular, which may compress the very view-count variation the study aims to explain (survivorship bias). (iii) VADER is a lexicon-based model and is known to misclassify sarcasm, irony, and domain-specific slang, which may be unevenly distributed across niches (e.g., gaming). (iv) The comment sample was capped at up to 100 top-level comments per video and excludes reply threads, which may not represent the full emotional composition of larger comment sections. (v) The cross-sectional design cannot establish causal direction between sentiment, niche, and reach.</p>
+    </section>
+
+    <section id="conclusion">
+      <h2 class="sec-title"><span class="roman">VI</span> Conclusion</h2>
+      <p>This study set out to test whether positive sentiment in titles and descriptions predicts YouTube view counts, using a cross-niche sample of 70 videos in gaming, news/politics, and entertainment. The evidence does not support a simple "positivity drives virality" story. Title sentiment showed no reliable relationship with views in either the bivariate or multivariate specification. Description sentiment showed a significant relationship with views only once niche was controlled — and that relationship was negative. Content niche, by contrast, explained the great majority of variance in both view count and title sentiment itself, and a model omitting niche collapsed to near-zero explanatory power (R² = 0.060 vs. 0.423). Taken together, these results argue that content category is a necessary control variable — not an afterthought — in any study attempting to link emotional framing to audience reach, and that claims about sentiment-driven virality should be treated skeptically unless topic is explicitly accounted for. Future work should extend this design with a larger, more niche-diverse and more randomly sampled corpus; incorporate reply-thread and creator-level fixed effects; and, where feasible, move toward panel or experimental designs capable of separating genuine causal framing effects from compositional differences across content categories.</p>
+      <p><b>Acknowledgements.</b> The author thanks the Department of Statistics and Data Science at Jahangirnagar University for the academic environment that supports undergraduate research, and the open-source communities behind VADER, Hugging Face Transformers, and statsmodels. Computational resources were provided by Google Colaboratory.</p>
+    </section>
+
+    <section id="references">
+      <h2 class="sec-title"><span class="roman">VII</span> References</h2>
+      <ol class="refs">
+        <li>C. J. Hutto and E. Gilbert, "VADER: A parsimonious rule-based model for sentiment analysis of social media text," in <i>Proc. Int. AAAI Conf. Web Social Media (ICWSM)</i>, Ann Arbor, MI, 2014, vol. 8, no. 1, pp. 216–225.</li>
+        <li>M. Thelwall, "Social media analytics for YouTube comments: Potential and limitations," <i>Int. J. Soc. Res. Methodol.</i>, vol. 21, no. 3, pp. 303–316, 2018.</li>
+        <li>V. Sanh, L. Debut, J. Chaumond, and T. Wolf, "DistilBERT, a distilled version of BERT: Smaller, faster, cheaper and lighter," arXiv preprint arXiv:1910.01108, 2019.</li>
+        <li>J. Hartmann, M. Heitmann, C. Sievert, and C. Schamp, "More than a feeling: Accuracy and application of sentiment analysis," <i>Int. J. Res. Marketing</i>, vol. 40, no. 1, pp. 75–87, Mar. 2023.</li>
+        <li>S. Rosenthal, N. Farra, and P. Nakov, "SemEval-2017 task 4: Sentiment analysis in Twitter," in <i>Proc. 11th Int. Workshop Semantic Eval.</i>, Vancouver, BC, Aug. 2017, pp. 502–518.</li>
+        <li>B. Pang and L. Lee, "Opinion mining and sentiment analysis," <i>Found. Trends Inform. Retrieval</i>, vol. 2, no. 1–2, pp. 1–135, 2008.</li>
+        <li>K. Kim and J. Park, "Predicting box office performance of movies using YouTube trailer comments," <i>Expert Syst. Appl.</i>, vol. 136, pp. 226–234, Dec. 2019.</li>
+        <li>J. Devlin, M.-W. Chang, K. Lee, and K. Toutanova, "BERT: Pre-training of deep bidirectional transformers for language understanding," in <i>Proc. NAACL-HLT</i>, Minneapolis, MN, Jun. 2019, pp. 4171–4186.</li>
+        <li>P. Ekman, "An argument for basic emotions," <i>Cognition Emotion</i>, vol. 6, no. 3–4, pp. 169–200, 1992.</li>
+        <li>S. Dang-Xuan, S. Stieglitz, J. Wladarsch, and C. Neuberger, "An investigation of influentials and the role of sentiment in political communication on Twitter during election periods," <i>Inform. Commun. Soc.</i>, vol. 16, no. 5, pp. 795–825, 2013.</li>
+        <li>F. C. Bartlett, <i>Remembering: A Study in Experimental and Social Psychology</i>. Cambridge, U.K.: Cambridge Univ. Press, 1932.</li>
+        <li>E. Hatfield, J. T. Cacioppo, and R. L. Rapson, "Emotional contagion," <i>Curr. Dir. Psychol. Sci.</i>, vol. 2, no. 3, pp. 96–100, Jun. 1993.</li>
+      </ol>
+    </section>
+
+  </article>
+</main>
+
+<footer>
+  <div class="wrap">
+    <div class="bio">
+      <div class="avatar">SB</div>
+      <div>
+        <h3>Md. Shimul Ahmed Bappi</h3>
+        <p>Undergraduate student in the Department of Statistics and Data Science at Jahangirnagar University, Savar, Dhaka, Bangladesh. His research interests encompass computational social science, natural language processing, web mining, and applied machine learning for social media analytics.</p>
+        <div class="links">
+          <a href="mailto:shimulbappi.sds49@gmail.com">Email</a>
+          <a href="https://github.com/Shimul-Bappi" target="_blank" rel="noopener">GitHub</a>
+          <a href="https://www.linkedin.com/in/shimul-bappi" target="_blank" rel="noopener">LinkedIn</a>
+          <a href="https://www.researchgate.net/profile/Md-Bappi-2" target="_blank" rel="noopener">ResearchGate</a>
+        </div>
+      </div>
+    </div>
+    <div class="copyright">© 2026 Md. Shimul Ahmed Bappi · Jahangirnagar University · Department of Statistics and Data Science · All rights reserved</div>
+  </div>
+</footer>
+
+</body>
+</html>
