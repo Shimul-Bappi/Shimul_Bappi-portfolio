@@ -297,6 +297,7 @@ section{padding:clamp(4rem,8vw,6rem) clamp(1rem,5vw,5rem)}
 .location-addr{color:var(--gray4);font-size:.8rem}
 .location-dept{color:var(--cyan);font-size:.75rem;font-weight:500;margin-top:.2rem}
 
+
 /* ── RESEARCH ── */
 #research{background:linear-gradient(to bottom,var(--dark),var(--navy))}
 .research-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;max-width:380px;margin:0 auto 3.5rem}
@@ -316,7 +317,6 @@ section{padding:clamp(4rem,8vw,6rem) clamp(1rem,5vw,5rem)}
 .research-card:hover{transform:translateY(-4px) scale(1.01);box-shadow:0 20px 48px rgba(0,0,0,.35)}
 .rc1{background:linear-gradient(135deg,rgba(56,189,248,.18),rgba(59,130,246,.08));border:1px solid rgba(56,189,248,.2)}
 .rc2{background:linear-gradient(135deg,rgba(99,102,241,.18),rgba(139,92,246,.08));border:1px solid rgba(99,102,241,.2)}
-.rc3{background:linear-gradient(135deg,rgba(139,92,246,.18),rgba(236,72,153,.08));border:1px solid rgba(139,92,246,.2)}
 .rc-num{position:absolute;top:1rem;right:1.2rem;font-size:3rem;font-weight:900;color:rgba(255,255,255,.04);line-height:1;pointer-events:none}
 .rc-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:1.25rem}
 .rc-icon{width:52px;height:52px;border-radius:1rem;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);display:flex;align-items:center;justify-content:center;font-size:1.75rem}
@@ -329,7 +329,6 @@ section{padding:clamp(4rem,8vw,6rem) clamp(1rem,5vw,5rem)}
 .rc-tag{padding:.2rem .6rem;border-radius:.4rem;font-size:.7rem;font-weight:500;border:1px solid}
 .tag-cyan{background:rgba(56,189,248,.15);color:#67e8f9;border-color:rgba(56,189,248,.2)}
 .tag-indigo{background:rgba(99,102,241,.15);color:#a5b4fc;border-color:rgba(99,102,241,.2)}
-.tag-violet{background:rgba(139,92,246,.15);color:#c4b5fd;border-color:rgba(139,92,246,.2)}
 .rc-actions{display:flex;gap:.6rem}
 .rc-btn-read{
   flex:1;display:flex;align-items:center;justify-content:center;gap:.4rem;
@@ -346,7 +345,6 @@ section{padding:clamp(4rem,8vw,6rem) clamp(1rem,5vw,5rem)}
 .rc-btn-dl:hover{background:rgba(56,189,248,.12);border-color:rgba(56,189,248,.25);color:var(--cyan)}
 .rc-bottom-line{position:absolute;bottom:0;left:0;right:0;height:2px;opacity:0;transition:opacity .3s;background:linear-gradient(90deg,var(--cyan),var(--blue))}
 .rc2 .rc-bottom-line{background:linear-gradient(90deg,#6366f1,#a855f7)}
-.rc3 .rc-bottom-line{background:linear-gradient(90deg,#8b5cf6,#ec4899)}
 .research-card:hover .rc-bottom-line{opacity:1}
 .rg-cta{
   margin-top:3.5rem;display:flex;flex-direction:column;align-items:center;gap:1rem;
@@ -366,31 +364,29 @@ section{padding:clamp(4rem,8vw,6rem) clamp(1rem,5vw,5rem)}
 
 /*
   ── FUTURE RESEARCH CARDS: how to add one ──
-  This block does not change any existing visual design. It is a pure
-  safety net: .rc1/.rc2/.rc3 (and the matching .tag-cyan/.tag-indigo/
-  .tag-violet) are OPTIONAL going forward. If you add a new
-  <div class="research-card"> to .research-grid WITHOUT one of those
-  color classes, the rules below auto-assign the correct rotating
-  color (cyan → indigo → violet → cyan → ...) based on the card's
-  position in the grid, so the layout never breaks and colors never
-  clash, no matter how many cards you add.
+  Only two card formats exist now: .rc1 and .rc2 — no more .rc3.
+  Add cards to .research-grid alternating the class by hand:
+    Card 1 → rc1, Card 2 → rc2, Card 3 → rc1, Card 4 → rc2, ...
+  (odd position → rc1, even position → rc2). Match tags the same way:
+  rc1 cards use .tag-cyan, rc2 cards use .tag-indigo.
 
-  Explicit .rc1/.rc2/.rc3 classes (if you still add them by hand)
-  always win over this fallback, because they are declared later in
-  this file — so nothing about cards 1–4 changes.
-
-  To add card #5, simply copy the card 4 markup, change rc-num text,
-  title, description, tags, and links — no CSS edits required.
+  As a safety net, if you ever forget to add rc1/rc2 by hand, the
+  rules below auto-assign the correct alternating color based on the
+  card's position in the grid (odd = cyan/rc1 style, even =
+  indigo/rc2 style) — so the layout never breaks. Explicit .rc1/.rc2
+  classes always win over this fallback since they're declared
+  earlier in this file... actually no: CSS specificity/order means
+  LATER rules win when specificity ties, so this fallback intentionally
+  targets bare .research-card (no rc1/rc2 class) only, and never
+  overrides an explicit .rc1/.rc2 you've set.
 */
-.research-grid > .research-card:nth-child(3n+1){background:linear-gradient(135deg,rgba(56,189,248,.18),rgba(59,130,246,.08));border:1px solid rgba(56,189,248,.2)}
-.research-grid > .research-card:nth-child(3n+2){background:linear-gradient(135deg,rgba(99,102,241,.18),rgba(139,92,246,.08));border:1px solid rgba(99,102,241,.2)}
-.research-grid > .research-card:nth-child(3n+3){background:linear-gradient(135deg,rgba(139,92,246,.18),rgba(236,72,153,.08));border:1px solid rgba(139,92,246,.2)}
-.research-grid > .research-card:nth-child(3n+1) .rc-bottom-line{background:linear-gradient(90deg,var(--cyan),var(--blue))}
-.research-grid > .research-card:nth-child(3n+2) .rc-bottom-line{background:linear-gradient(90deg,#6366f1,#a855f7)}
-.research-grid > .research-card:nth-child(3n+3) .rc-bottom-line{background:linear-gradient(90deg,#8b5cf6,#ec4899)}
-.research-grid > .research-card:nth-child(3n+1) .rc-tag{background:rgba(56,189,248,.15);color:#67e8f9;border-color:rgba(56,189,248,.2)}
-.research-grid > .research-card:nth-child(3n+2) .rc-tag{background:rgba(99,102,241,.15);color:#a5b4fc;border-color:rgba(99,102,241,.2)}
-.research-grid > .research-card:nth-child(3n+3) .rc-tag{background:rgba(139,92,246,.15);color:#c4b5fd;border-color:rgba(139,92,246,.2)}
+.research-grid > .research-card:not(.rc1):not(.rc2):nth-child(odd){background:linear-gradient(135deg,rgba(56,189,248,.18),rgba(59,130,246,.08));border:1px solid rgba(56,189,248,.2)}
+.research-grid > .research-card:not(.rc1):not(.rc2):nth-child(even){background:linear-gradient(135deg,rgba(99,102,241,.18),rgba(139,92,246,.08));border:1px solid rgba(99,102,241,.2)}
+.research-grid > .research-card:not(.rc1):not(.rc2):nth-child(odd) .rc-bottom-line{background:linear-gradient(90deg,var(--cyan),var(--blue))}
+.research-grid > .research-card:not(.rc1):not(.rc2):nth-child(even) .rc-bottom-line{background:linear-gradient(90deg,#6366f1,#a855f7)}
+.research-grid > .research-card:not(.rc1):not(.rc2):nth-child(odd) .rc-tag{background:rgba(56,189,248,.15);color:#67e8f9;border-color:rgba(56,189,248,.2)}
+.research-grid > .research-card:not(.rc1):not(.rc2):nth-child(even) .rc-tag{background:rgba(99,102,241,.15);color:#a5b4fc;border-color:rgba(99,102,241,.2)}
+
 
 /* ── SKILLS ── */
 #skills{background:linear-gradient(to bottom,var(--navy),var(--dark))}
