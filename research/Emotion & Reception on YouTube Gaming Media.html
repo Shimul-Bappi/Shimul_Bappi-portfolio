@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Analyzing Public Reactions to Critical Successes and Failures — Shimul</title>
+<meta name="description" content="Multi-label emotion and sentiment detection via predictive NLP models on YouTube gaming media.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;1,8..60,400&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="R6.chart.umd.js"></script>
+<style>
+
+  :root{
+    --ink:#12151b;
+    --panel:#191d25;
+    --panel-2:#1f2530;
+    --rule:#2b323f;
+    --rule-soft:#232935;
+    --text:#e9e6dd;
+    --text-dim:#9aa1ad;
+    --text-faint:#6d7482;
+    --success:#4fb286;
+    --success-soft:rgba(79,178,134,.14);
+    --failure:#e2683f;
+    --failure-soft:rgba(226,104,63,.14);
+    --gold:#e6b04e;
+    --gold-soft:rgba(230,176,78,.15);
+    --neutral-bar:#6b7280;
+    --font-display:'Fraunces', Georgia, 'Times New Roman', serif;
+    --font-body:'Source Serif 4', Georgia, 'Times New Roman', serif;
+    --font-ui:'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --maxw:920px;
+  }
+
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--ink);
+    color:var(--text);
+    font-family:var(--font-body);
+    line-height:1.6;
+    -webkit-font-smoothing:antialiased;
+  }
+  ::selection{background:var(--gold-soft); color:var(--text);}
+
+  a{color:var(--gold); text-decoration:none; border-bottom:1px solid rgba(230,176,78,.35);}
+  a:hover{border-bottom-color:var(--gold);}
+
+  img,svg{max-width:100%;}
+
+  @media (prefers-reduced-motion: reduce){
+    html{scroll-behavior:auto;}
+    *{animation-duration:0.001ms !important; transition-duration:0.001ms !important;}
+  }
+
+  /* ---------- Reading progress ---------- */
+  #progress{
+    position:fixed; top:0; left:0; height:3px; width:0%;
+    background:linear-gradient(90deg,var(--failure),var(--gold),var(--success));
+    z-index:200; transition:width .08s linear;
+  }
+
+  /* ---------- Top bar ---------- */
+  .topbar{
+    position:sticky; top:0; z-index:100;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 24px;
+    background:rgba(18,21,27,.86);
+    backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--rule-soft);
+    font-family:var(--font-ui);
+  }
+  .topbar-title{
+    font-size:13.5px; color:var(--text-dim); letter-spacing:.01em;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+    max-width:60vw;
+  }
+  .topbar-title strong{color:var(--text); font-weight:600;}
+  .toc-toggle{
+    display:none;
+    background:var(--panel-2); color:var(--text); border:1px solid var(--rule);
+    border-radius:7px; padding:7px 12px; font-family:var(--font-ui); font-size:13px;
+    cursor:pointer;
+  }
+
+  /* ---------- Page shell ---------- */
+  .shell{
+    max-width:1180px; margin:0 auto;
+    display:grid; grid-template-columns:220px minmax(0,1fr);
+    gap:56px;
+    padding:0 24px;
+  }
+  @media (max-width:960px){
+    .shell{grid-template-columns:1fr; gap:0;}
+    .toc-toggle{display:inline-block;}
+  }
+
+  /* ---------- Sidebar TOC ---------- */
+  .toc-wrap{
+    position:sticky; top:64px; align-self:start;
+    max-height:calc(100vh - 90px); overflow-y:auto;
+    padding:28px 0 40px;
+    font-family:var(--font-ui);
+  }
+  .toc-wrap::-webkit-scrollbar{width:4px;}
+  .toc-wrap::-webkit-scrollbar-thumb{background:var(--rule); border-radius:4px;}
+  .toc-label{
+    font-size:11px; text-transform:uppercase; letter-spacing:.11em;
+    color:var(--text-faint); margin:0 0 12px;
+  }
+  .toc-wrap ol{list-style:none; margin:0; padding:0; counter-reset:toc;}
+  .toc-wrap li{counter-increment:toc; margin:0;}
+  .toc-wrap a{
+    display:block; border:none; color:var(--text-dim);
+    font-size:13.5px; padding:6px 0 6px 22px; position:relative;
+    line-height:1.35;
+  }
+  .toc-wrap a::before{
+    content:counter(toc,decimal-leading-zero);
+    position:absolute; left:0; top:6px; font-size:11px; color:var(--text-faint);
+  }
+  .toc-wrap a:hover{color:var(--text);}
+  .toc-wrap a.active{color:var(--gold);}
+  .toc-wrap a.active::before{color:var(--gold);}
+
+  @media (max-width:960px){
+    .toc-wrap{
+      position:fixed; inset:0 0 0 auto; width:280px; max-width:82vw;
+      top:0; height:100vh; max-height:none; z-index:150;
+      background:var(--panel); border-left:1px solid var(--rule);
+      transform:translateX(100%); transition:transform .25s ease;
+      padding:70px 22px 30px;
+    }
+    .toc-wrap.open{transform:translateX(0);}
+    .toc-scrim{
+      position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:140;
+      opacity:0; pointer-events:none; transition:opacity .25s ease;
+    }
+    .toc-scrim.open{opacity:1; pointer-events:auto;}
+  }
+
+  /* ---------- Main column ---------- */
+  main{min-width:0; padding-bottom:80px;}
+
+  /* ---------- Hero ---------- */
+  .hero{
+    padding:64px 0 44px;
+    border-bottom:1px solid var(--rule-soft);
+  }
+  .hero-tags{
+    display:flex; flex-wrap:wrap; gap:8px; margin-bottom:26px; font-family:var(--font-ui);
+  }
+  .tag{
+    font-size:12px; padding:5px 11px; border-radius:100px;
+    border:1px solid var(--rule); color:var(--text-dim);
+  }
+  .tag.success{border-color:rgba(79,178,134,.4); color:var(--success);}
+  .tag.failure{border-color:rgba(226,104,63,.4); color:var(--failure);}
+
+  h1.title{
+    font-family:var(--font-display); font-weight:600; font-size:clamp(30px,4.4vw,46px);
+    line-height:1.14; margin:0 0 20px; letter-spacing:-0.01em; max-width:15ch;
+  }
+  .subtitle{
+    font-family:var(--font-body); font-size:17.5px; color:var(--text-dim);
+    max-width:62ch; margin:0 0 30px;
+  }
+  .byline{
+    display:flex; align-items:center; gap:14px; font-family:var(--font-ui);
+    font-size:13.5px; color:var(--text-dim); flex-wrap:wrap;
+  }
+  .byline .avatar{
+    width:38px; height:38px; border-radius:50%;
+    background:linear-gradient(135deg,var(--failure),var(--gold));
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--font-display); font-weight:600; color:#12151b; font-size:14px;
+  }
+  .byline strong{color:var(--text); font-weight:600;}
+  .byline .sep{color:var(--rule);}
+
+  /* ---------- Stat grid ---------- */
+  .stat-grid{
+    margin-top:40px;
+    display:grid; grid-template-columns:repeat(6,1fr); gap:0;
+    border-top:1px solid var(--rule-soft);
+  }
+  .stat{
+    padding:22px 16px 0; border-right:1px solid var(--rule-soft);
+  }
+  .stat:last-child{border-right:none;}
+  .stat .n{
+    font-family:var(--font-display); font-size:clamp(20px,2.6vw,30px); font-weight:600;
+    color:var(--text); display:block; line-height:1;
+  }
+  .stat .l{
+    display:block; margin-top:8px; font-family:var(--font-ui); font-size:11.5px;
+    color:var(--text-faint); line-height:1.35;
+  }
+  @media (max-width:760px){
+    .stat-grid{grid-template-columns:repeat(3,1fr); row-gap:20px;}
+    .stat:nth-child(3){border-right:none;}
+  }
+  @media (max-width:420px){
+    .stat-grid{grid-template-columns:repeat(2,1fr);}
+    .stat:nth-child(odd){border-right:1px solid var(--rule-soft);}
+    .stat:nth-child(3){border-right:1px solid var(--rule-soft);}
+  }
+
+  /* ---------- Sections ---------- */
+  section{padding:56px 0; border-bottom:1px solid var(--rule-soft); scroll-margin-top:70px;}
+  section:last-of-type{border-bottom:none;}
+
+  .kicker{
+    font-family:var(--font-ui); font-size:12px; color:var(--text-faint);
+    display:flex; align-items:baseline; gap:10px; margin-bottom:10px;
+  }
+  .kicker .num{color:var(--gold); font-weight:600;}
+
+  h2{
+    font-family:var(--font-display); font-weight:600; font-size:clamp(23px,3vw,30px);
+    margin:0 0 22px; letter-spacing:-.005em;
+  }
+  h3{
+    font-family:var(--font-display); font-weight:600; font-size:19px;
+    margin:34px 0 14px; color:var(--text);
+  }
+  h4{
+    font-family:var(--font-ui); font-weight:600; font-size:14px;
+    margin:24px 0 10px; color:var(--text-dim); text-transform:none;
+  }
+
+  .prose{max-width:72ch;}
+  .prose p{
+    margin:0 0 17px; text-align:justify; hyphens:auto; -webkit-hyphens:auto;
+    text-justify:inter-word;
+    font-size:16.5px; color:#dcd9d0;
+  }
+  .prose p:last-child{margin-bottom:0;}
+  .prose em{color:var(--text); font-style:italic;}
+  .prose strong{color:var(--text); font-weight:600;}
+  .prose ul,.prose ol{max-width:72ch; padding-left:22px; margin:0 0 17px;}
+  .prose li{margin-bottom:8px; font-size:16.5px; color:#dcd9d0;}
+
+  .lede{
+    font-size:19px; color:var(--text); max-width:70ch;
+    font-family:var(--font-body); text-align:justify; hyphens:auto;
+  }
+
+  blockquote{
+    margin:26px 0; padding:4px 0 4px 20px; border-left:2px solid var(--gold);
+    font-family:var(--font-display); font-style:italic; font-size:18px;
+    color:var(--text); max-width:60ch;
+  }
+
+  code{font-family:var(--font-ui); background:var(--panel-2); padding:1px 6px; border-radius:4px; font-size:.88em;}
+
+  /* ---------- callout / pull box ---------- */
+  .callout{
+    background:var(--panel); border:1px solid var(--rule);
+    border-radius:12px; padding:20px 24px; margin:26px 0;
+    font-family:var(--font-ui); font-size:14.5px; color:var(--text-dim);
+    max-width:72ch;
+  }
+  .callout strong{color:var(--text);}
+
+  /* ---------- Figures / charts ---------- */
+  figure{margin:30px 0 8px;}
+  .chart-card{
+    background:var(--panel); border:1px solid var(--rule); border-radius:14px;
+    padding:22px 20px 12px;
+  }
+  .chart-card .chart-title{
+    font-family:var(--font-ui); font-size:13.5px; font-weight:600; color:var(--text);
+    margin-bottom:2px;
+  }
+  .chart-card .chart-sub{
+    font-family:var(--font-ui); font-size:12.5px; color:var(--text-faint); margin-bottom:16px;
+  }
+  .chart-holder{position:relative; height:320px;}
+  .chart-holder.short{height:260px;}
+  figcaption{
+    font-family:var(--font-ui); font-size:12.5px; color:var(--text-faint);
+    margin-top:12px; max-width:72ch; line-height:1.5;
+  }
+  figcaption b{color:var(--text-dim);}
+
+  .legend-row{
+    display:flex; gap:18px; flex-wrap:wrap; margin-bottom:14px; font-family:var(--font-ui); font-size:12.5px; color:var(--text-dim);
+  }
+  .legend-row span{display:inline-flex; align-items:center; gap:6px;}
+  .legend-row i{width:10px; height:10px; border-radius:3px; display:inline-block;}
+
+  /* ---------- Tabs ---------- */
+  .tabs{
+    display:flex; gap:4px; margin-bottom:18px; font-family:var(--font-ui);
+    border-bottom:1px solid var(--rule);
+  }
+  .tab-btn{
+    background:none; border:none; color:var(--text-faint); font-family:var(--font-ui);
+    font-size:13.5px; padding:9px 14px; cursor:pointer; position:relative; top:1px;
+    border-bottom:2px solid transparent;
+  }
+  .tab-btn.active{color:var(--text); border-bottom-color:var(--gold);}
+  .tab-panel{display:none;}
+  .tab-panel.active{display:block;}
+
+  /* ---------- Tables ---------- */
+  .table-wrap{overflow-x:auto; margin:22px 0; border:1px solid var(--rule); border-radius:12px;}
+  table{
+    border-collapse:collapse; width:100%; font-family:var(--font-ui); font-size:13.5px; min-width:480px;
+  }
+  caption{
+    text-align:left; caption-side:top; padding:14px 16px 0;
+    font-family:var(--font-ui); font-size:11.5px; color:var(--text-faint);
+    text-transform:uppercase; letter-spacing:.08em;
+  }
+  th,td{padding:11px 16px; text-align:left; border-bottom:1px solid var(--rule-soft); white-space:nowrap;}
+  thead th{
+    color:var(--text-dim); font-weight:600; font-size:12px; background:var(--panel-2);
+    border-bottom:1px solid var(--rule);
+  }
+  tbody tr:last-child td{border-bottom:none;}
+  tbody tr:hover{background:rgba(255,255,255,.02);}
+  td.num,th.num{text-align:right; font-variant-numeric:tabular-nums;}
+  .bar-cell{display:flex; align-items:center; gap:10px;}
+  .bar-cell .track{flex:1; height:6px; background:var(--rule-soft); border-radius:4px; overflow:hidden; min-width:60px;}
+  .bar-cell .fill{height:100%; border-radius:4px;}
+  .pill{
+    display:inline-block; font-size:11px; padding:3px 9px; border-radius:100px; font-family:var(--font-ui);
+  }
+  .pill.success{background:var(--success-soft); color:var(--success);}
+  .pill.failure{background:var(--failure-soft); color:var(--failure);}
+
+  /* heatmap table */
+  .heat-table td.hm{text-align:center; font-variant-numeric:tabular-nums; font-size:13px; color:#0e0f10; font-weight:600;}
+  .heat-table th{text-align:center;}
+  .heat-table td:first-child, .heat-table th:first-child{text-align:left; color:var(--text-dim); font-weight:500; white-space:normal;}
+
+  /* ---------- References ---------- */
+  .refs{font-family:var(--font-ui); font-size:13.5px; color:var(--text-dim); max-width:78ch;}
+  .refs ol{padding-left:22px; margin:0;}
+  .refs li{margin-bottom:11px; line-height:1.5;}
+
+  /* ---------- Footer ---------- */
+  footer{
+    padding:48px 0 60px; font-family:var(--font-ui);
+  }
+  .footer-card{
+    display:flex; gap:20px; align-items:flex-start; padding:26px; border:1px solid var(--rule);
+    border-radius:14px; background:var(--panel); flex-wrap:wrap;
+  }
+  .footer-card .avatar{
+    width:52px; height:52px; border-radius:50%; flex:none;
+    background:linear-gradient(135deg,var(--failure),var(--gold));
+    display:flex; align-items:center; justify-content:center;
+    font-family:var(--font-display); font-weight:600; color:#12151b; font-size:18px;
+  }
+  .footer-card h4{margin:0 0 4px; font-size:15px; color:var(--text);}
+  .footer-card p{margin:0 0 12px; font-size:13.5px; color:var(--text-dim); max-width:60ch; line-height:1.55;}
+  .footer-links{display:flex; gap:14px; flex-wrap:wrap;}
+  .footer-links a{font-size:13px; border-bottom:1px solid rgba(230,176,78,.3);}
+  .fine-print{
+    text-align:center; margin-top:30px; font-size:12px; color:var(--text-faint);
+  }
+
+  .back-to-top{
+    position:fixed; right:22px; bottom:22px; z-index:90;
+    width:42px; height:42px; border-radius:50%; background:var(--panel);
+    border:1px solid var(--rule); color:var(--text-dim); font-size:16px;
+    display:flex; align-items:center; justify-content:center; cursor:pointer;
+    opacity:0; pointer-events:none; transition:opacity .2s ease;
+  }
+  .back-to-top.show{opacity:1; pointer-events:auto;}
+
+  ::-webkit-scrollbar{width:10px; height:10px;}
+  ::-webkit-scrollbar-track{background:var(--ink);}
+  ::-webkit-scrollbar-thumb{background:var(--rule); border-radius:6px;}
+</style>
+</head>
+<body>
+
+<div id="progress"></div>
+
+<div class="topbar">
+  <div class="topbar-title">Shimul · <strong>Emotion &amp; Reception on YouTube Gaming Media</strong></div>
+  <button class="toc-toggle" id="tocToggle">Contents</button>
+</div>
+
+<div class="toc-scrim" id="tocScrim"></div>
+
+<div class="shell">
+
+  <nav class="toc-wrap" id="tocWrap">
+    <p class="toc-label">Contents</p>
+    <ol>
+      <li><a href="#sec-intro">Introduction</a></li>
+      <li><a href="#sec-related">Related Work</a></li>
+      <li><a href="#sec-method">Data &amp; Methodology</a></li>
+      <li><a href="#sec-metrics">Evaluation Metrics</a></li>
+      <li><a href="#sec-results">Results &amp; Discussion</a></li>
+      <li><a href="#sec-limitations">Limitations</a></li>
+      <li><a href="#sec-conclusion">Conclusion &amp; Future Work</a></li>
+      <li><a href="#sec-references">References</a></li>
+    </ol>
+  </nav>
+
+  <main>
+
+    <div class="hero">
+      <div class="hero-tags">
+        <span class="tag">Sentiment Analysis</span>
+        <span class="tag">Multi-Label NLP</span>
+        <span class="tag">Gaming Media</span>
+        <span class="tag success">Critical success</span>
+        <span class="tag failure">Critical failure</span>
+      </div>
+
+      <h1 class="title">Analyzing Public Reactions to Critical Successes and Failures</h1>
+      <p class="subtitle">Multi-label emotion and sentiment detection via predictive NLP models on YouTube gaming media — comparing audience reaction to two celebrated 2026 releases against two that met public backlash.</p>
+
+      <div class="byline">
+        <div class="avatar">SB</div>
+        <div>
+          <strong>Md. Shimul Ahmed Bappi</strong> · Department of Statistics and Data Science<br>
+          Jahangirnagar University, Savar, Dhaka, Bangladesh
+        </div>
+      </div>
+
+      <div class="stat-grid">
+        <div class="stat"><span class="n">8,386</span><span class="l">Comments analyzed</span></div>
+        <div class="stat"><span class="n">4</span><span class="l">Titles · 2 success / 2 failure</span></div>
+        <div class="stat"><span class="n">8</span><span class="l">Plutchik emotion classes</span></div>
+        <div class="stat"><span class="n">3</span><span class="l">Predictive architectures</span></div>
+        <div class="stat"><span class="n">0.879</span><span class="l">Best macro-F1 (Random Forest)</span></div>
+        <div class="stat"><span class="n">69.5%</span><span class="l">Sentiment classification accuracy</span></div>
+      </div>
+    </div>
+
+    <section id="sec-abstract">
+      <div class="kicker"><span class="num">Abstract</span></div>
+      <p class="lede">Reception of a newly released video game is rarely a single, uniform reaction. Audiences respond with mixtures of joy, anticipation, anger, and disgust that a plain positive/negative score cannot capture, and sarcasm complicates automated reading further.</p>
+      <div class="prose" style="margin-top:22px;">
+        <p>This study compares public emotional reactions to two 2026 case studies of critical success — <em>Kingdom Come: Deliverance II</em> and <em>Grand Theft Auto VI</em> — against two case studies of critical failure and community backlash — <em>Highguard</em> and <em>Subnautica 2</em> — using 8,386 cleaned YouTube comments collected via the YouTube Data API v3. Comments were weak-labeled for three-class sentiment using VADER and for eight Plutchik-model emotions (anger, anticipation, disgust, fear, joy, sadness, surprise, trust) using the NRC Emotion Lexicon. Three predictive architectures were benchmarked for multi-label emotion classification on TF-IDF and contextual embeddings: Logistic Regression, Random Forest, and a fine-tuned RoBERTa-base transformer.</p>
+        <p>Random Forest achieved the strongest multi-label performance (macro-F1 = 0.879, Hamming loss = 0.102), outperforming both Logistic Regression (macro-F1 = 0.817) and fine-tuned RoBERTa (macro-F1 = 0.767), a result attributable to the lexicon-derived nature of the labels rewarding lexical-overlap models over contextual ones. Trust and anticipation were the most prevalent and best-classified emotions across both groups, while emotion prevalence differed only modestly between success and failure titles, suggesting that critical failure provokes engaged, multi-emotion discourse rather than uniformly negative reaction. Comment-level engagement (like count) correlated positively with the presence of trust but negatively with every other emotion, a counter-intuitive pattern discussed in relation to outrage-engagement literature. We close with a discussion of weak-label limitations and directions for validated, hand-annotated extensions of this work.</p>
+      </div>
+      <div class="callout">
+        <strong>Keywords :</strong> multi-label emotion classification, sentiment analysis, YouTube comments, NLP, gaming media, NRC lexicon, VADER, RoBERTa, weak supervision.
+      </div>
+    </section>
+
+    <section id="sec-intro">
+      <div class="kicker"><span class="num">I.</span> Introduction</div>
+      <h2>A single score can't hold what a comment section feels</h2>
+      <div class="prose">
+        <h3>Problem statement</h3>
+        <p>Audience reaction to a video game release is emotionally heterogeneous. A single title can simultaneously provoke joy at strong gameplay systems, anger at monetization decisions, and disgust at a live-service pivot, often within the same comment thread, and frequently laced with sarcasm that undermines lexical sentiment scoring (a comment reading "10/10, just to spite the haters" ironically praises a poorly received title). Coarse positive/negative/neutral classification collapses this variance into a single dimension and discards the specific emotional texture communities express toward critical successes versus critical failures. This motivates a multi-label emotion framework capable of representing co-occurring, sometimes contradictory, emotional signals within a single comment.</p>
+
+        <h3>Core objective</h3>
+        <p>The core objective of this study is to compare the emotional variance expressed in YouTube comment sections responding to critically successful game releases against those responding to critically unsuccessful or controversial releases, using a shared multi-label emotion schema and a shared sentiment schema across both groups.</p>
+
+        <h3>Research question</h3>
+        <p>This study investigates whether predictive NLP models trained on weak-labeled comment data can map shifting, multi-dimensional community sentiment in live 2026 gaming discourse, and whether that discourse differs measurably between critically successful and critically unsuccessful titles.</p>
+      </div>
+    </section>
+
+    <section id="sec-related">
+      <div class="kicker"><span class="num">II.</span> Related Work</div>
+      <h2>Lexicons, transformers, and the diffusion of emotion</h2>
+      <div class="prose">
+        <p>Sentiment analysis of user-generated game commentary has typically relied on either lexicon-based scoring or supervised classifiers trained on review-score-labeled data, neither of which captures multi-label emotional nuance. Plutchik's wheel of emotions [1] provides the eight-category schema, anger, anticipation, disgust, fear, joy, sadness, surprise, trust — adopted in this study, operationalized computationally through the NRC Word-Emotion Association Lexicon [2], a crowd-sourced word-emotion mapping widely used for weak/silver labeling in the absence of hand-annotated corpora. VADER [3] is a rule-based sentiment scorer tuned specifically for social-media text, including emoji and punctuation-based intensifiers, making it well suited to YouTube comment data.</p>
+        <p>On the modeling side, transformer architectures such as BERT [4] and its more robustly optimized variant RoBERTa [5] have become the standard contextual baseline for text classification, typically outperforming bag-of-words models when trained against reliable ground truth; multi-label extensions of these architectures are reviewed in [6]. Term-frequency–inverse-document-frequency (TF-IDF) weighting [7] remains a strong, computationally inexpensive baseline for short, informal social-media text such as comments. Separately, work on the diffusion of moralized and emotional content [8] has established that affectively charged language, particularly moral-emotional language, is associated with greater social-media engagement, motivating this study's analysis of the relationship between expressed emotion and comment-level engagement.</p>
+      </div>
+    </section>
+
+    <section id="sec-method">
+      <div class="kicker"><span class="num">III.</span> Data &amp; Methodology</div>
+      <h2>Four titles, two verdicts, one shared coding scheme</h2>
+
+      <div class="prose">
+        <h3>A. Case study selection &amp; data collection</h3>
+        <p>Four 2026-era releases were selected to form two contrasting groups. The <strong style="color:var(--success);">critical success</strong> group comprises <em>Kingdom Come: Deliverance II</em> and <em>Grand Theft Auto VI</em>, chosen for high critical reception, strong player trust, and, for GTA VI — sustained anticipation surrounding its release. The <strong style="color:var(--failure);">critical failure / backlash</strong> group comprises <em>Highguard</em>, a live-service shooter that launched to a "Mostly Negative" Steam rating despite a strong concurrent-player debut, and <em>Subnautica 2</em>, whose early-access launch was accompanied by public controversy over developer terminations and licensing/ownership concerns.</p>
+        <p>Comment-level data text, author, publish timestamp, like count, and reply count, was collected via the YouTube Data API v3 <code>commentThreads</code> endpoint across 15 videos (reviews, reaction videos, and controversy/critique essays) spanning the four titles, yielding 8,455 raw comments before deduplication.</p>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <caption>Table I — Corpus composition by title</caption>
+          <thead>
+            <tr><th>Title</th><th>Group</th><th class="num">Videos</th><th class="num">Comments</th><th>Share</th></tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Kingdom Come: Deliverance II</td><td><span class="pill success">Success</span></td><td class="num">4</td><td class="num">3,561</td>
+              <td><div class="bar-cell"><div class="track"><div class="fill" style="width:100%;background:var(--success);"></div></div></div></td>
+            </tr>
+            <tr>
+              <td>Grand Theft Auto VI</td><td><span class="pill success">Success</span></td><td class="num">3</td><td class="num">508</td>
+              <td><div class="bar-cell"><div class="track"><div class="fill" style="width:14%;background:var(--success);"></div></div></div></td>
+            </tr>
+            <tr>
+              <td>Highguard</td><td><span class="pill failure">Failure</span></td><td class="num">4</td><td class="num">1,935</td>
+              <td><div class="bar-cell"><div class="track"><div class="fill" style="width:54%;background:var(--failure);"></div></div></div></td>
+            </tr>
+            <tr>
+              <td>Subnautica 2</td><td><span class="pill failure">Failure</span></td><td class="num">4</td><td class="num">2,451</td>
+              <td><div class="bar-cell"><div class="track"><div class="fill" style="width:69%;background:var(--failure);"></div></div></div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <figcaption>Bars scaled relative to Kingdom Come: Deliverance II (3,561 comments). The pronounced volume imbalance, driven by channel subscriber base and, for GTA VI, the relative recency of its trailer material at collection time, is revisited in the Limitations section.</figcaption>
+
+      <div class="prose">
+        <h3>B. Text preprocessing</h3>
+        <p>Raw comment text was cleaned by removing URLs, HTML entities, and @-mentions; converting emoji to their textual descriptions via the emoji library prior to lowercasing, so that emotionally loaded emoji contribute lexical signal rather than being discarded as noise; and stripping non-alphabetic characters. Tokenization, English stopword removal, and lemmatization were performed with NLTK [11]. Comments that reduced to an empty string after cleaning, emoji-only or link-only spam, were discarded, leaving 8,386 comments for downstream analysis.</p>
+
+        <h3>C. Weak-label target construction</h3>
+        <p>No pre-existing dataset labels YouTube gaming comments with Plutchik-model emotions, so labels were constructed through weak (silver) supervision rather than manual annotation, consistent with standard practice in low-resource emotion mining [2]. Three-class sentiment (Positive / Negative / Neutral) was assigned via the VADER compound score, thresholded at ±0.05. Multi-label emotion targets were assigned via the NRC Emotion Lexicon: for each of the eight emotion categories, a comment received a positive label if at least one of its lemmatized tokens carried that emotion association in the lexicon. Comments with no lexicon hits across all eight categories (2,192 of 8,386, or 26.1%) were excluded from the emotion-modeling subset, leaving <strong>6,194 comments</strong> for multi-label classification.</p>
+
+        <h3>D. Feature extraction</h3>
+        <p>Two feature representations were used depending on model family. For Logistic Regression and Random Forest, TF-IDF vectorization was applied with unigrams and bigrams, a maximum vocabulary of 10,000 terms, and a minimum document frequency of 3. For the transformer baseline, the RoBERTa tokenizer's native subword embeddings were used directly, with sequences truncated or padded to 128 tokens. An 80/20 train–test split, stratified on sentiment class, was applied consistently across all three models to allow direct performance comparison.</p>
+
+        <h3>E. Predictive models</h3>
+        <p>Three architectures were benchmarked for the multi-label emotion classification task: <strong>(1)</strong> Logistic Regression, wrapped in a <code>MultiOutputClassifier</code> to produce one binary classifier per emotion label, with balanced class weighting to counter label imbalance; <strong>(2)</strong> Random Forest, likewise wrapped in a <code>MultiOutputClassifier</code>, using 200 estimators and balanced class weighting [9]; and <strong>(3)</strong> a fine-tuned RoBERTa-base transformer [5] with a sigmoid multi-label classification head and binary cross-entropy loss, trained for three epochs on a GPU runtime. Sentiment (single-label, three-class) was classified separately using Logistic Regression on the same TF-IDF features, since that task does not require a multi-output architecture.</p>
+      </div>
+    </section>
+
+    <section id="sec-metrics">
+      <div class="kicker"><span class="num">IV.</span> Evaluation Metrics</div>
+      <h2>Reading multi-label performance correctly</h2>
+      <div class="prose">
+        <p>Multi-label emotion classification was evaluated using macro-averaged F1 (equal weight per emotion class, sensitive to performance on rarer classes such as surprise and disgust), micro-averaged F1 (weighted by instance count), and Hamming loss, the fraction of individually mis-predicted labels across the full label set [6]. Sentiment classification, being single-label multi-class, was evaluated using per-class precision, recall, and F1-score, alongside overall accuracy.</p>
+      </div>
+    </section>
+
+    <section id="sec-results">
+      <div class="kicker"><span class="num">V.</span> Results &amp; Discussion</div>
+      <h2>Backlash looks less like negativity and more like noise</h2>
+
+      <div class="prose">
+        <h3>A. Emotion label distribution</h3>
+        <p>Across the 6,194 comments with at least one emotion signal, trust (58.5%, 3,621 comments) and anticipation (56.1%, 3,474 comments) were the most prevalent emotions, followed by joy (53.0%), fear (46.5%), anger (42.8%), sadness (42.1%), disgust (36.3%), and surprise (32.7%). The dominance of trust and anticipation across the full corpus, including the failure group, indicates that even critically unsuccessful titles generate substantial forward-looking and trust-related discourse, likely reflecting comments about developer intentions, future patches, or comparisons to earlier titles in a franchise.</p>
+      </div>
+
+      <h3 style="margin-top:38px;">B. Emotion prevalence: success vs. failure</h3>
+      <figure>
+        <div class="chart-card">
+          <div class="chart-title">Proportion of comments containing each emotion signal</div>
+          <div class="chart-sub">Grouped by critical reception, hover a bar for the exact rate</div>
+          <img src="img/R6__F1__emotion_distribution_by_group.png" alt="Bar chart of emotion prevalence, Critical Success vs. Critical Failure" style="display:block; width:100%; height:auto; border-radius:6px;">
+        </div>
+        <figcaption><b>Fig. 1.</b> Anger is only marginally higher in the failure group (≈43.9%) than the success group (≈41.2%), and disgust is slightly higher for failure (≈38.0% vs. ≈34.4%), consistent with a backlash pattern, but modest rather than dramatic. Joy is, perhaps counter-intuitively, higher in the success group (≈55.9% vs. ≈50.2%), while anticipation runs comparably high in both (≈57.8% success vs. ≈54.4% failure), plausible given that both Highguard and Subnautica 2 threads carry substantial forward-looking discourse about patches, refunds, and whether developers will "fix" the game.</figcaption>
+      </figure>
+
+      <div class="prose">
+        <p>This pattern supports the framing in the Introduction: critical failure in gaming communities provokes engaged, multi-emotion discourse rather than a uniform shift toward negative affect alone.</p>
+        <h3>C. Emotion prevalence by title</h3>
+        <p>At the individual-title level, <em>Subnautica 2</em> shows the highest prevalence of nearly every emotion category simultaneously (anger 0.49, disgust 0.41, fear 0.52, trust 0.62), consistent with its comment corpus being drawn substantially from controversy and "drama recap" videos rather than pure gameplay reviews, which tend to elicit stronger reactions across the board rather than polarized ones. <em>Grand Theft Auto VI</em> shows the lowest anger (0.35) and disgust (0.26) of all four titles, consistent with its comments being drawn from trailer-reaction videos recorded before release, where negative firsthand-experience commentary cannot yet occur. Use the toggle below to sort the heatmap by any emotion.</p>
+      </div>
+
+      <figure>
+        <div class="chart-card">
+          <div class="chart-title">Emotion heatmap by title</div>
+          <div class="chart-sub">Sourced from the fitted NRC lexicon pass over 6,194 emotion-bearing comments</div>
+          <img src="img/R6__F2__emotion_heatmap_by_title.png" alt="Heatmap of emotion prevalence by game title" style="display:block; width:100%; height:auto; border-radius:6px;">
+        </div>
+        <figcaption><b>Fig. 2.</b> Darker gold = higher prevalence of that emotion signal within the title's comments. Sourced from the fitted NRC lexicon pass over 6,194 emotion-bearing comments.</figcaption>
+      </figure>
+
+      <h3 style="margin-top:38px;">D. Sentiment distribution: success vs. failure</h3>
+      <figure>
+        <div class="chart-card">
+          <div class="chart-title">VADER sentiment polarity, by group</div>
+          <div class="chart-sub">Share of comments classed Negative / Neutral / Positive</div>
+          <img src="img/R6__F3__sentiment_distribution_by_group.png" alt="Stacked bar chart of sentiment polarity distribution, Success vs. Failure" style="display:block; width:100%; height:auto; border-radius:6px;">
+        </div>
+        <figcaption><b>Fig. 3.</b> The failure group's negative share exceeds the success group's by only about four percentage points (≈35% vs. ≈31%), a smaller gap than the framing of "critical failure" might suggest.</figcaption>
+      </figure>
+
+      <div class="prose">
+        <p>Two factors plausibly explain the muted gap. First, VADER's rule-based scoring is known to misclassify sarcasm, "10/10 just to spite the haters" scores as strongly positive despite mocking intent, which the Introduction anticipated as a core challenge. Second, a meaningful share of comments on failure-group videos are supportive replies agreeing with a critique rather than expressing negativity about the game directly.</p>
+      </div>
+
+      <h3 style="margin-top:38px;">E–F. Model performance</h3>
+      <div class="tabs" id="modelTabs">
+        <button class="tab-btn active" data-tab="tab-multilabel">Multi-label emotion</button>
+        <button class="tab-btn" data-tab="tab-peremotion">Per-emotion F1</button>
+        <button class="tab-btn" data-tab="tab-sentiment">Sentiment report</button>
+      </div>
+
+      <div class="tab-panel active" id="tab-multilabel">
+        <div class="chart-card">
+          <div class="chart-title">Multi-label emotion classification, test set (n = 1,239)</div>
+          <div class="chart-sub">Macro-F1, micro-F1, and Hamming loss (lower is better) by model</div>
+          <div class="chart-holder"><canvas id="chartModels"></canvas></div>
+        </div>
+        <figcaption style="margin-top:14px;"><b>Table II.</b> Random Forest (TF-IDF) achieves the strongest multi-label performance (macro-F1 = 0.879, Hamming loss = 0.102), inverting the typical expectation that contextual transformers outperform bag-of-words baselines. The most plausible explanation is label leakage by construction: because emotion labels were themselves derived from lexicon word-membership, TF-IDF features, which directly encode the presence of the same surface-level words the lexicon checks against, are near-tautologically predictive of the label. RoBERTa learns contextual, semantic representations that don't privilege exact lexicon-word matches, so it is comparatively disadvantaged when ground truth is itself lexicon-defined. This should not be read as evidence that transformers are unsuited to the task in general, only that this weak-labeling strategy structurally favors lexical-match models.</figcaption>
+      </div>
+
+      <div class="tab-panel" id="tab-peremotion">
+        <div class="chart-card">
+          <div class="chart-title">Per-emotion F1-score (Logistic Regression)</div>
+          <div class="chart-sub">Sorted high to low, tracks label prevalence closely</div>
+          <div class="chart-holder"><canvas id="chartPerEmotion"></canvas></div>
+        </div>
+        <figcaption style="margin-top:14px;"><b>Table III.</b> Trust (F1 = 0.861) and anticipation (F1 = 0.858), the two most frequent labels, are also the best classified, while anger (F1 = 0.766), a comparatively rarer and more lexically diffuse category, is the weakest: consistent with the general pattern in imbalanced multi-label learning that classification quality correlates with support [6].</figcaption>
+      </div>
+
+      <div class="tab-panel" id="tab-sentiment">
+        <div class="table-wrap">
+          <table>
+            <caption>Table IV — Sentiment classification report (Logistic Regression, test set, n = 1,239)</caption>
+            <thead><tr><th>Class</th><th class="num">Precision</th><th class="num">Recall</th><th class="num">F1-score</th><th class="num">Support</th></tr></thead>
+            <tbody>
+              <tr><td><span class="pill failure">Negative</span></td><td class="num">0.67</td><td class="num">0.64</td><td class="num">0.65</td><td class="num">406</td></tr>
+              <tr><td><span class="pill" style="background:rgba(154,161,173,.16); color:var(--text-dim);">Neutral</span></td><td class="num">0.39</td><td class="num">0.55</td><td class="num">0.46</td><td class="num">151</td></tr>
+              <tr><td><span class="pill success">Positive</span></td><td class="num">0.81</td><td class="num">0.76</td><td class="num">0.79</td><td class="num">682</td></tr>
+              <tr><td style="color:var(--text-faint);">Accuracy</td><td class="num" colspan="2"></td><td class="num">0.69</td><td class="num">1,239</td></tr>
+              <tr><td style="color:var(--text-faint);">Macro avg</td><td class="num">0.62</td><td class="num">0.65</td><td class="num">0.63</td><td class="num">1,239</td></tr>
+              <tr><td style="color:var(--text-faint);">Weighted avg</td><td class="num">0.71</td><td class="num">0.69</td><td class="num">0.70</td><td class="num">1,239</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <figcaption>Overall accuracy reached 69.5%. Performance was strongly class-dependent: Positive reached F1 = 0.79 and Negative F1 = 0.65, but Neutral lagged substantially at F1 = 0.46, with precision of only 0.39 despite reasonable recall (0.55), reflecting the well-documented difficulty of the neutral class, whose narrow VADER compound-score band (−0.05 to 0.05) captures a linguistically heterogeneous mix of genuinely neutral, mildly sarcastic, and short low-information comments.</figcaption>
+      </div>
+
+      <h3 style="margin-top:44px;">G. Sentiment polarity vs. public engagement</h3>
+      <div class="prose">
+        <p>Contrary to the outrage-amplification pattern reported in prior social-media engagement literature [8], negative comments in this corpus did not receive the highest engagement.</p>
+      </div>
+      <figure>
+        <div class="chart-card">
+          <div class="chart-title">Mean like count, by sentiment class</div>
+          <div class="chart-sub">Median is 0 likes for all three classes, means are driven by a long right tail</div>
+          <img src="img/R6__F4__engagement_by_sentiment.png" alt="Box plot of comment engagement (likes) by sentiment class" style="display:block; width:100%; height:auto; border-radius:6px;">
+        </div>
+        <figcaption><b>Fig. 4.</b> Neutral comments carried the highest mean like count (31.07), more than double Positive (11.03) and roughly double Negative (14.74). Because the median is 0 for every class, this is driven by a small number of very-high-engagement outliers, plausibly informational or pinned-style top comments (score summaries, official-reply threads) that VADER scores as neutral by default rather than emotionally charged content, a useful caution against reading mean-based engagement gaps under heavy right-skew as evidence of an emotion–engagement relationship without inspecting the distribution directly.</figcaption>
+      </figure>
+
+      <figure>
+        <div class="chart-card">
+          <div class="chart-title">Mean likes when an emotion is present vs. absent</div>
+          <div class="chart-sub">Only trust is associated with higher engagement</div>
+          <div class="chart-holder"><canvas id="chartEngagement"></canvas></div>
+        </div>
+        <figcaption><b>Table V.</b> Trust-bearing comments averaged 17.15 likes versus 11.21 for comments without trust language. Every other emotion shows the opposite pattern, joy, anger, sadness, surprise, anticipation, and disgust are all associated with <em>lower</em>, not higher, mean engagement when present. This runs counter to the moral-emotional-contagion account of engagement [8], suggesting that at the comment level, highly charged individual comments do not systematically out-perform calmer ones in likes engagement here may be driven more by comment position, timing, or informational value than by expressed emotion.</figcaption>
+      </figure>
+    </section>
+
+    <section id="sec-limitations">
+      <div class="kicker"><span class="num">VI.</span> Limitations</div>
+      <h2>What weak labels can and can't tell you</h2>
+      <div class="prose">
+        <ul>
+          <li><strong>Weak-label ceiling.</strong> Both sentiment and emotion labels are weak/silver labels derived from VADER and the NRC lexicon, not hand-annotated ground truth; reported model performance reflects each model's ability to recover lexicon-defined patterns, not necessarily its ability to detect true human-perceived emotion, the Random-Forest-over-RoBERTa result should be read in that light.</li>
+          <li><strong>Sarcasm.</strong> Explicitly flagged in the problem statement, sarcasm is a known failure mode of both VADER and lexicon-based emotion tagging, and no sarcasm-detection step was applied; several qualitative examples in this corpus, ironically "positive" comments about Highguard, illustrate this.</li>
+          <li><strong>Volume imbalance.</strong> The corpus is volume-imbalanced across titles (508 comments for GTA VI versus 3,561 for Kingdom Come: Deliverance II), driven by both channel selection and, for GTA VI, its pre-release trailer-reaction status rather than post-launch reception; per-title findings should be weighted accordingly.</li>
+          <li><strong>Engagement proxy.</strong> Engagement was proxied by raw like count rather than a normalized view-to-like ratio, since the <code>commentThreads</code> endpoint used for extraction does not return video-level view counts.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section id="sec-conclusion">
+      <div class="kicker"><span class="num">VII.</span> Conclusion &amp; Future Work</div>
+      <h2>Backlash is loud, but it isn't just anger</h2>
+      <div class="prose">
+        <p>This study compared multi-label emotional reactions to critically successful and critically unsuccessful 2026 game releases using weak-labeled YouTube comment data and three predictive architectures. Emotion prevalence differed only modestly between success and failure groups, with trust and anticipation dominant across both, suggesting that gaming-community backlash manifests as engaged, multi-dimensional discourse rather than a uniform shift to negative affect. Random Forest on TF-IDF features outperformed both Logistic Regression and fine-tuned RoBERTa on the multi-label emotion task, a result attributable to the lexical nature of the weak labels rather than a general claim about model superiority. Engagement analysis revealed a counter-intuitive pattern in which trust, not high-arousal negative emotion, was the only emotion positively associated with comment-level likes.</p>
+        <p>Future work should prioritize: <strong>(1)</strong> a hand-annotated validation subset to quantify weak-label noise and enable a fair transformer comparison against genuine ground truth; <strong>(2)</strong> explicit sarcasm detection prior to sentiment scoring; <strong>(3)</strong> a balanced, larger-volume corpus per title to control for channel and content-type confounds; and <strong>(4)</strong> video-level view-count integration to compute a true view-to-like engagement ratio rather than a like-count proxy.</p>
+      </div>
+    </section>
+
+    <section id="sec-references">
+      <div class="kicker"><span class="num">§</span> References</div>
+      <h2>References</h2>
+      <div class="refs">
+        <ol>
+          <li>R. Plutchik, "The nature of emotions," <em>American Scientist</em>, vol. 89, no. 4, pp. 344–350, 2001.</li>
+          <li>S. M. Mohammad and P. D. Turney, "Crowdsourcing a word–emotion association lexicon," <em>Computational Intelligence</em>, vol. 29, no. 3, pp. 436–465, 2013.</li>
+          <li>C. J. Hutto and E. Gilbert, "VADER: A parsimonious rule-based model for sentiment analysis of social media text," in <em>Proc. 8th Int. AAAI Conf. Weblogs and Social Media (ICWSM)</em>, Ann Arbor, MI, USA, 2014, pp. 216–225.</li>
+          <li>J. Devlin, M.-W. Chang, K. Lee, and K. Toutanova, "BERT: Pre-training of deep bidirectional transformers for language understanding," in <em>Proc. NAACL-HLT</em>, Minneapolis, MN, USA, 2019, pp. 4171–4186.</li>
+          <li>Y. Liu et al., "RoBERTa: A robustly optimized BERT pretraining approach," arXiv:1907.11692, 2019.</li>
+          <li>M.-L. Zhang and Z.-H. Zhou, "A review on multi-label learning algorithms," <em>IEEE Trans. Knowledge and Data Engineering</em>, vol. 26, no. 8, pp. 1819–1837, Aug. 2014.</li>
+          <li>G. Salton and C. Buckley, "Term-weighting approaches in automatic text retrieval," <em>Information Processing &amp; Management</em>, vol. 24, no. 5, pp. 513–523, 1988.</li>
+          <li>W. J. Brady, J. A. Wills, J. T. Jost, J. A. Tucker, and J. J. Van Bavel, "Emotion shapes the diffusion of moralized content in social networks," <em>Proc. Nat. Acad. Sci.</em>, vol. 114, no. 28, pp. 7313–7318, 2017.</li>
+          <li>L. Breiman, "Random forests," <em>Machine Learning</em>, vol. 45, no. 1, pp. 5–32, 2001.</li>
+          <li>F. Pedregosa et al., "Scikit-learn: Machine learning in Python," <em>Journal of Machine Learning Research</em>, vol. 12, pp. 2825–2830, 2011.</li>
+          <li>S. Bird, E. Klein, and E. Loper, <em>Natural Language Processing with Python</em>. Sebastopol, CA, USA: O'Reilly Media, 2009.</li>
+          <li>Google Developers, "YouTube Data API v3 Reference," 2024. Available: developers.google.com/youtube/v3</li>
+        </ol>
+      </div>
+    </section>
+
+    <footer>
+      <div class="footer-card">
+        <div class="avatar">SB</div>
+        <div>
+          <h4>Md. Shimul Ahmed Bappi</h4>
+          <p>Department of Statistics and Data Science, Jahangirnagar University, Savar, Dhaka, Bangladesh. Research interests include computational social science, natural language processing, web mining, and applied statistics for social-media analytics.</p>
+          <div class="footer-links">
+            <a href="#top">Back to top</a>
+          </div>
+        </div>
+      </div>
+      <p class="fine-print">© 2026 Shimul · Department of Statistics and Data Science, Jahangirnagar University</p>
+    </footer>
+
+  </main>
+</div>
+
+<button class="back-to-top" id="backTop" aria-label="Back to top">↑</button>
+
+<script>
+/* ---------------- shared chart theme ---------------- */
+const COLORS = {
+  success:'#4fb286', failure:'#e2683f', gold:'#e6b04e', neutral:'#8b93a3',
+  text:'#e9e6dd', textDim:'#9aa1ad', grid:'rgba(255,255,255,.06)'
+};
+Chart.defaults.font.family = "'Inter', sans-serif";
+Chart.defaults.color = COLORS.textDim;
+Chart.defaults.font.size = 12;
+
+const tooltipBase = {
+  backgroundColor:'#20252f', titleColor:'#e9e6dd', bodyColor:'#c7cbd3',
+  borderColor:'#2b323f', borderWidth:1, padding:10, cornerRadius:8,
+  titleFont:{family:"'Inter', sans-serif", weight:'600'},
+  bodyFont:{family:"'Inter', sans-serif"}
+};
+
+/* ---------------- Table II: models tab ---------------- */
+new Chart(document.getElementById('chartModels'), {
+  type:'bar',
+  data:{
+    labels:['Logistic Regression\n(TF-IDF)','Random Forest\n(TF-IDF)','RoBERTa-base\n(fine-tuned)'],
+    datasets:[
+      {label:'Macro-F1', data:[0.8174,0.8788,0.7667], backgroundColor:COLORS.gold, borderRadius:4, maxBarThickness:40},
+      {label:'Micro-F1', data:[0.8212,0.8828,0.7702], backgroundColor:'#8d7136', borderRadius:4, maxBarThickness:40},
+      {label:'Hamming loss', data:[0.1608,0.1020,0.2076], backgroundColor:COLORS.failure, borderRadius:4, maxBarThickness:40}
+    ]
+  },
+  options:{
+    responsive:true, maintainAspectRatio:false,
+    scales:{
+      y:{ min:0, max:1, grid:{color:COLORS.grid} },
+      x:{ grid:{display:false}, ticks:{ callback:function(v){ return this.getLabelForValue(v).split('\n'); } } }
+    },
+    plugins:{
+      legend:{ position:'top', align:'end', labels:{boxWidth:10, boxHeight:10, usePointStyle:true, pointStyle:'rectRounded'} },
+      tooltip:{ ...tooltipBase, callbacks:{ label:c=>` ${c.dataset.label}: ${c.parsed.y.toFixed(3)}` } }
+    }
+  }
+});
+
+/* ---------------- Table III: per-emotion F1 ---------------- */
+const perEmotion = [
+  {e:'Trust', f1:0.861}, {e:'Anticipation', f1:0.858}, {e:'Joy', f1:0.849},
+  {e:'Fear', f1:0.811}, {e:'Surprise', f1:0.804}, {e:'Disgust', f1:0.799},
+  {e:'Sadness', f1:0.792}, {e:'Anger', f1:0.766}
+].sort((a,b)=>b.f1-a.f1);
+
+new Chart(document.getElementById('chartPerEmotion'), {
+  type:'bar',
+  data:{
+    labels: perEmotion.map(d=>d.e),
+    datasets:[{ data: perEmotion.map(d=>d.f1), backgroundColor: COLORS.gold, borderRadius:4, maxBarThickness:22 }]
+  },
+  options:{
+    indexAxis:'y', responsive:true, maintainAspectRatio:false,
+    scales:{
+      x:{ min:0.6, max:0.9, grid:{color:COLORS.grid} },
+      y:{ grid:{display:false} }
+    },
+    plugins:{
+      legend:{display:false},
+      tooltip:{ ...tooltipBase, callbacks:{ label:c=>` F1 = ${c.parsed.x.toFixed(3)}` } }
+    }
+  }
+});
+
+/* ---------------- Fig 4 extended: engagement by emotion presence ---------------- */
+const engEmotions = ['Trust','Anticipation','Disgust','Surprise','Joy','Anger','Sadness'];
+const withEmo    = [17.15,13.55,12.85,11.69,11.87,11.22,11.10];
+const withoutEmo = [11.21,16.13,15.73,16.14,17.85,17.27,17.29];
+
+new Chart(document.getElementById('chartEngagement'), {
+  type:'bar',
+  data:{
+    labels: engEmotions,
+    datasets:[
+      {label:'Comment contains emotion', data: withEmo, backgroundColor: COLORS.gold, borderRadius:4, maxBarThickness:20},
+      {label:'Comment does not', data: withoutEmo, backgroundColor:'#3a4150', borderRadius:4, maxBarThickness:20}
+    ]
+  },
+  options:{
+    indexAxis:'y', responsive:true, maintainAspectRatio:false,
+    scales:{
+      x:{ title:{display:true, text:'Mean likes', color:COLORS.textDim}, grid:{color:COLORS.grid} },
+      y:{ grid:{display:false} }
+    },
+    plugins:{
+      legend:{ position:'top', align:'end', labels:{boxWidth:10, boxHeight:10, usePointStyle:true, pointStyle:'rectRounded'} },
+      tooltip: tooltipBase
+    }
+  }
+});
+
+/* ---------------- Tabs ---------------- */
+document.querySelectorAll('#modelTabs .tab-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('#modelTabs .tab-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.tab-panel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById(btn.dataset.tab).classList.add('active');
+  });
+});
+
+/* ---------------- Mobile TOC ---------------- */
+const tocWrap = document.getElementById('tocWrap');
+const tocToggle = document.getElementById('tocToggle');
+const tocScrim = document.getElementById('tocScrim');
+function closeToc(){ tocWrap.classList.remove('open'); tocScrim.classList.remove('open'); }
+tocToggle.addEventListener('click', ()=>{ tocWrap.classList.add('open'); tocScrim.classList.add('open'); });
+tocScrim.addEventListener('click', closeToc);
+tocWrap.querySelectorAll('a').forEach(a=>a.addEventListener('click', closeToc));
+
+/* ---------------- Scrollspy + progress + back-to-top ---------------- */
+const sections = ['sec-intro','sec-related','sec-method','sec-metrics','sec-results','sec-limitations','sec-conclusion','sec-references']
+  .map(id=>document.getElementById(id)).filter(Boolean);
+const tocLinks = Array.from(tocWrap.querySelectorAll('a'));
+const progressBar = document.getElementById('progress');
+const backTop = document.getElementById('backTop');
+
+function onScroll(){
+  const doc = document.documentElement;
+  const scrollTop = window.scrollY;
+  const height = doc.scrollHeight - doc.clientHeight;
+  progressBar.style.width = Math.min(100, (scrollTop/height)*100) + '%';
+  backTop.classList.toggle('show', scrollTop > 600);
+
+  let current = sections[0];
+  for(const sec of sections){
+    if(sec.getBoundingClientRect().top - 100 <= 0) current = sec;
+  }
+  tocLinks.forEach(a=>{
+    a.classList.toggle('active', current && a.getAttribute('href') === '#'+current.id);
+  });
+}
+document.addEventListener('scroll', onScroll, {passive:true});
+onScroll();
+
+backTop.addEventListener('click', ()=> window.scrollTo({top:0, behavior:'smooth'}));
+</script>
+
+</body>
+</html>
